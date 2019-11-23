@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  jsonapi_resources :teams, only: [:index]
+  post 'games', to: 'games#find'
+
+  resources :teams, only: [:index]
 end

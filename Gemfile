@@ -55,5 +55,9 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # waydowntown
-gem 'jsonapi-resources'
+gem 'fast_jsonapi'
 gem 'rack-cors'
+
+group :test do
+  gem 'jsonapi_expectations', require: false
+end
