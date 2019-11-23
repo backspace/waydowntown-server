@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  post 'games', to: 'games#find'
+  post 'games/request', to: 'games#find'
 
   resources :teams, only: [:index]
 end

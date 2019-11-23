@@ -11,7 +11,7 @@ RSpec.describe "Games", type: :request do
 
       allow(FindGames).to receive(:new).with(team).and_return(finder)
 
-      post '/games', headers: { "Authorization" => "Bearer #{team.token}" }
+      post '/games/request', headers: { "Authorization" => "Bearer #{team.token}" }
       expect(response).to have_http_status(200)
       expect_attributes name: "a game name"
     end
