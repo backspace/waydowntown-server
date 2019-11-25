@@ -7,7 +7,9 @@ class FindGames
 
   def call()
     (Incarnation.all - @initiator.incarnations).map do |incarnation|
-      Game.new(incarnation: incarnation)
-    end
+      Team.all.without(@initiator).map do |other_team|
+        Game.new(incarnation: incarnation, teams: [@initiator, other_team])
+      end
+    end.flatten
   end
 end

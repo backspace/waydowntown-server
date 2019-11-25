@@ -4,8 +4,8 @@ RSpec.describe FindGames do
   subject { described_class.new(requesting_team).call() }
 
   context 'with an existing game' do
-    let(:played_team) { Team.create(name: 'played') }
-    let(:other_team) { Team.create(name: 'them') }
+    let!(:played_team) { Team.create(name: 'played') }
+    let!(:other_team) { Team.create(name: 'them') }
 
     let(:played_concept) { Concept.create(name: 'played') }
     let(:played_incarnation) { Incarnation.create(concept: played_concept) }
@@ -15,7 +15,9 @@ RSpec.describe FindGames do
 
     it 'returns possible games with possible concept overlap' do
       expect(subject).not_to include( have_attributes(incarnation: played_incarnation) )
-      expect(subject).to include( have_attributes(incarnation: unplayed_incarnation) )
+
+      expect(subject).to include( have_attributes(incarnation: unplayed_incarnation, teams: [requesting_team, played_team] ) )
+      expect(subject).to include( have_attributes(incarnation: unplayed_incarnation, teams: [requesting_team, other_team] ) )
     end
   end
 end
