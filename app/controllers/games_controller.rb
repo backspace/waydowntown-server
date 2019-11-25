@@ -9,10 +9,4 @@ class GamesController < ApplicationController
 
     render json: GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations]).serializable_hash
   end
-
-  private def bearer_token
-    pattern = /^Bearer /
-    header  = request.headers['Authorization']
-    header.gsub(pattern, '') if header && header.match(pattern)
-  end
 end
