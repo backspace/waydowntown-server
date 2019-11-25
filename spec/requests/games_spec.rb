@@ -33,8 +33,7 @@ RSpec.describe "Games", type: :request do
 
       expect(included_initiator_participation["relationships"]["team"]["data"]["id"]).to eq(team.id.to_s)
 
-      # FIXME this doesn’t work, despite the record being there?
-      # expect_record concept, included: true
+      expect_json('included.?', type: 'concept', id: concept.id.to_s)
     end
   end
 end
