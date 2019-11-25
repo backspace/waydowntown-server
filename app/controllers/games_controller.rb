@@ -4,9 +4,10 @@ class GamesController < ApplicationController
 
     games = FindGames.new(team).call
     game = games.first
-    game.save
 
-    render json: GameSerializer.new(game, include: [:incarnation, :'incarnation.concept']).serializable_hash
+    CreateProspectiveGame.new(team, game).call
+
+    render json: GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations]).serializable_hash
   end
 
   private def bearer_token
