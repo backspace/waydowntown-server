@@ -38,6 +38,8 @@ RSpec.describe "Games", type: :request do
       expect(included_initiator_participation["relationships"]["team"]["data"]["id"]).to eq(team.id.to_s)
 
       expect_json('included.?', type: 'concept', id: concept.id.to_s)
+      expect_json('included.?', type: 'team', id: team.id.to_s)
+      expect_json('included.?', type: 'team', id: other_team.id.to_s)
 
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
