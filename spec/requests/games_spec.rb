@@ -9,7 +9,11 @@ RSpec.describe "Games", type: :request do
     let(:incarnation) { Incarnation.create(concept: concept) }
     let(:concept) { Concept.create(name: 'a concept') }
 
-    it "finds a game" do
+    let(:team_channel_spy) { class_spy('TeamChannel') }
+
+    it "finds a game and temporarily notifies invitees" do
+      stub_const('TeamChannel', team_channel_spy)
+
       finder = double
       allow(finder).to receive(:call).and_return([game])
 
@@ -34,6 +38,10 @@ RSpec.describe "Games", type: :request do
       expect(included_initiator_participation["relationships"]["team"]["data"]["id"]).to eq(team.id.to_s)
 
       expect_json('included.?', type: 'concept', id: concept.id.to_s)
+
+
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
     end
   end
 end

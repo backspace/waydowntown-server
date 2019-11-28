@@ -7,6 +7,15 @@ class GamesController < ApplicationController
 
     CreateProspectiveGame.new(team, game).call
 
-    render json: GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations]).serializable_hash
+    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations]).serializable_hash
+
+    game.participations.reject(&:initiator).map(&:team).each do |other_team|
+      TeamChannel.broadcast_to(other_team, {
+        type: 'invitation',
+        content: json
+      })
+    end
+
+    render json: json
   end
 end
