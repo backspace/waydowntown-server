@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_24_234619) do
+ActiveRecord::Schema.define(version: 2019_11_28_204143) do
 
   create_table "concepts", force: :cascade do |t|
     t.string "name"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 2019_11_24_234619) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "initiator", default: false
+    t.boolean "accepted", default: false
     t.index ["game_id"], name: "index_participations_on_game_id"
     t.index ["team_id"], name: "index_participations_on_team_id"
   end

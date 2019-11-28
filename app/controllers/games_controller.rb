@@ -9,7 +9,18 @@ class GamesController < ApplicationController
 
     json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
 
-    game.participations.reject(&:initiator).map(&:team).each do |other_team|
+    render json: json
+  end
+
+  def accept
+    team = Team.find_by(id: bearer_token)
+    game = Game.find(params[:id])
+
+    game.participations.where(team: team).update_all(accepted: true)
+
+    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+
+    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
         type: 'invitation',
         content: json

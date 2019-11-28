@@ -1,15 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe "Games", type: :request do
+  let(:team) { Team.create(name: 'us') }
+  let(:other_team) { Team.create(name: 'them') }
+
+  let(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
+  let(:incarnation) { Incarnation.create(concept: concept) }
+  let(:concept) { Concept.create(name: 'a concept') }
+
+  let(:team_channel_spy) { class_spy('TeamChannel') }
+
   describe "POST /games" do
-    let(:team) { Team.create(name: 'us') }
-    let(:other_team) { Team.create(name: 'them') }
-
-    let(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
-    let(:incarnation) { Incarnation.create(concept: concept) }
-    let(:concept) { Concept.create(name: 'a concept') }
-
-    let(:team_channel_spy) { class_spy('TeamChannel') }
 
     it "finds a game and temporarily notifies invitees" do
       stub_const('TeamChannel', team_channel_spy)
@@ -41,6 +42,22 @@ RSpec.describe "Games", type: :request do
       expect_json('included.?', type: 'team', id: team.id.to_s)
       expect_json('included.?', type: 'team', id: other_team.id.to_s)
 
+      expect(team_channel_spy).not_to have_received(:broadcast_to)
+    end
+  end
+
+  describe "POST /games/:id/accept" do
+    it "accepts a requested game and notifies invitees" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      post "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{team.token}" }
+      expect(response).to have_http_status(200)
+
+
+      json_result = JSON.parse(response.body)
+
+      team_participation = json_result["included"].find{|included| included["type"] == "participation" && included["id"] == team.id.to_s}
+      expect(team_participation["attributes"]["accepted"]).to be true
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
