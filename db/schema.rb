@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 2019_11_29_053422) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "initiator", default: false
-    t.boolean "accepted", default: false
+    t.string "aasm_state"
     t.index ["game_id"], name: "index_participations_on_game_id"
     t.index ["team_id"], name: "index_participations_on_team_id"
   end

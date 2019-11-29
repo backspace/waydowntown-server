@@ -49,6 +49,7 @@ RSpec.describe "Games", type: :request do
       included_initiator_participation = json_result["included"].find{|included| included["type"] == "participation" && included["attributes"]["initiator"]}
 
       expect(included_initiator_participation["relationships"]["team"]["data"]["id"]).to eq(team.id.to_s)
+      expect(included_initiator_participation["attributes"]["state"]).to eq("invited")
 
       expect_json('included.?', type: 'concept', id: concept.id.to_s)
       expect_json('included.?', type: 'team', id: team.id.to_s)
@@ -59,7 +60,14 @@ RSpec.describe "Games", type: :request do
   end
 
   describe "PATCH /games/:id/accept" do
-    it "accepts a requested game and notifies invitees" do
+    let(:another_team) { Team.create }
+    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "accepted") }
+
+    before do
+      team.participations.each{|p| p.invite! }
+    end
+
+    it "accepts a requested game and invites unsent participations" do
       stub_const('TeamChannel', team_channel_spy)
 
       patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
@@ -68,8 +76,16 @@ RSpec.describe "Games", type: :request do
 
       json_result = JSON.parse(response.body)
 
-      team_participation = json_result["included"].find{|included| included["type"] == "participation" && included["id"] == team.id.to_s}
-      expect(team_participation["attributes"]["accepted"]).to be true
+      participations = json_result["included"].select{|included| included["type"] == "participation"}
+
+      team_participation = participations.find{|included| included["id"] == team.participations.first.id.to_s}
+      expect(team_participation["attributes"]["state"]).to eq("accepted")
+
+      other_team_participation = participations.find{|included| included["id"] == other_team.participations.first.id.to_s}
+      expect(other_team_participation["attributes"]["state"]).to eq("invited")
+
+      another_team_participation = participations.find{|included| included["id"] == another_participation.id.to_s}
+      expect(another_team_participation["attributes"]["state"]).to eq("accepted")
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)

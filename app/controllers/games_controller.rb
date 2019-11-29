@@ -21,7 +21,8 @@ class GamesController < ApplicationController
     team = Member.find_by(id: bearer_token).team
     game = Game.find(params[:id])
 
-    game.participations.where(team: team).update_all(accepted: true)
+    game.participations.where(team: team).each{|p| p.accept!}
+    game.participations.where.not(team: team).each{|p| p.invite! if p.may_invite? }
 
     json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
 

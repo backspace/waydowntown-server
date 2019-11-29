@@ -8,7 +8,10 @@ class CreateProspectiveGame
 
   def call()
     @game.save!
-    @game.participations.find_by(team_id: @initiator.id).update_attribute(:initiator, true)
+    initiator_participation = @game.participations.find_by(team_id: @initiator.id)
+    initiator_participation.initiator = true
+    initiator_participation.invite
+    initiator_participation.save
 
     @game
   end
