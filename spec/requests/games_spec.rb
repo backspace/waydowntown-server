@@ -58,11 +58,11 @@ RSpec.describe "Games", type: :request do
     end
   end
 
-  describe "POST /games/:id/accept" do
+  describe "PATCH /games/:id/accept" do
     it "accepts a requested game and notifies invitees" do
       stub_const('TeamChannel', team_channel_spy)
 
-      post "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
+      patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
 
