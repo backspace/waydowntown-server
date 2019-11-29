@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_28_204143) do
+ActiveRecord::Schema.define(version: 2019_11_29_053422) do
 
   create_table "concepts", force: :cascade do |t|
     t.string "name"
@@ -30,6 +30,16 @@ ActiveRecord::Schema.define(version: 2019_11_28_204143) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["concept_id"], name: "index_incarnations_on_concept_id"
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.string "name"
+    t.decimal "lat"
+    t.decimal "lon"
+    t.integer "team_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["team_id"], name: "index_members_on_team_id"
   end
 
   create_table "participations", force: :cascade do |t|
@@ -53,6 +63,7 @@ ActiveRecord::Schema.define(version: 2019_11_28_204143) do
 
   add_foreign_key "games", "incarnations"
   add_foreign_key "incarnations", "concepts"
+  add_foreign_key "members", "teams"
   add_foreign_key "participations", "games"
   add_foreign_key "participations", "teams"
 end

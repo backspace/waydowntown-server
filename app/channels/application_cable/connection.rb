@@ -7,10 +7,10 @@ module ApplicationCable
     end
 
     protected def find_verified_team
-      team = Team.find_by(id: request.params[:token])
+      member = Member.find_by(id: request.params[:token])
 
-      reject_unauthorized_connection unless team
-      team
+      reject_unauthorized_connection unless member
+      member.team
     end
   end
 end

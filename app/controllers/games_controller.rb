@@ -1,11 +1,11 @@
 class GamesController < ApplicationController
   def index
-    team = Team.find_by(id: bearer_token)
+    team = Member.find_by(id: bearer_token).team
     render json: GameSerializer.new(team.games, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
   end
 
   def find
-    team = Team.find_by(id: bearer_token)
+    team = Member.find_by(id: bearer_token).team
 
     games = FindGames.new(team).call
     game = games.first
@@ -18,7 +18,7 @@ class GamesController < ApplicationController
   end
 
   def accept
-    team = Team.find_by(id: bearer_token)
+    team = Member.find_by(id: bearer_token).team
     game = Game.find(params[:id])
 
     game.participations.where(team: team).update_all(accepted: true)

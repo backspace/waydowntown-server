@@ -1,5 +1,5 @@
-class TeamSerializer
+class MemberSerializer
   include FastJsonapi::ObjectSerializer
   attributes :name, :lat, :lon
-  has_many :members
+  belongs_to :team
 end

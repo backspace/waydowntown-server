@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Games", type: :request do
+  let(:member) { Member.create(name: 'me', team: team) }
   let(:team) { Team.create(name: 'us') }
   let(:other_team) { Team.create(name: 'them') }
 
@@ -14,7 +15,7 @@ RSpec.describe "Games", type: :request do
     let!(:other_game) { Game.create(incarnation: incarnation) }
 
     it "finds the games for the current team" do
-      get '/games', headers: { "Authorization" => "Bearer #{team.token}" }
+      get '/games', headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
       expect_record game, type: 'game'
@@ -31,7 +32,7 @@ RSpec.describe "Games", type: :request do
 
       allow(FindGames).to receive(:new).with(team).and_return(finder)
 
-      post '/games/request', headers: { "Authorization" => "Bearer #{team.token}" }
+      post '/games/request', headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
       expect_relationship key: 'incarnation',
@@ -61,7 +62,7 @@ RSpec.describe "Games", type: :request do
     it "accepts a requested game and notifies invitees" do
       stub_const('TeamChannel', team_channel_spy)
 
-      post "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{team.token}" }
+      post "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
 

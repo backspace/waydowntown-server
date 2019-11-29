@@ -1,9 +1,9 @@
 class AuthController < ApplicationController
   def find
-    team = Team.find_by(id: bearer_token)
+    member = Member.find_by(id: bearer_token)
 
-    if team
-      render json: TeamSerializer.new(team).serializable_hash
+    if member
+      render json: MemberSerializer.new(member, include: [:team]).serializable_hash
     else
       render json: {}, status: :unauthorized
     end
