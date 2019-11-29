@@ -4,11 +4,23 @@ RSpec.describe "Games", type: :request do
   let(:team) { Team.create(name: 'us') }
   let(:other_team) { Team.create(name: 'them') }
 
-  let(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
+  let!(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
   let(:incarnation) { Incarnation.create(concept: concept) }
   let(:concept) { Concept.create(name: 'a concept') }
 
   let(:team_channel_spy) { class_spy('TeamChannel') }
+
+  describe "GET /games" do
+    let!(:other_game) { Game.create(incarnation: incarnation) }
+
+    it "finds the games for the current team" do
+      get '/games', headers: { "Authorization" => "Bearer #{team.token}" }
+      expect(response).to have_http_status(200)
+
+      expect_record game, type: 'game'
+      expect_item_count 1
+    end
+  end
 
   describe "POST /games" do
 

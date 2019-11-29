@@ -3,5 +3,6 @@ Rails.application.routes.draw do
   post 'games/request', to: 'games#find'
   post 'games/:id/accept', to: 'games#accept'
 
+  resources :games, only: [:index]
   resources :teams, only: [:index]
 end

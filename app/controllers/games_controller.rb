@@ -1,4 +1,9 @@
 class GamesController < ApplicationController
+  def index
+    team = Team.find_by(id: bearer_token)
+    render json: GameSerializer.new(team.games, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+  end
+
   def find
     team = Team.find_by(id: bearer_token)
 
