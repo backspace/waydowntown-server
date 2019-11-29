@@ -23,7 +23,6 @@ RSpec.describe "Games", type: :request do
   end
 
   describe "POST /games" do
-
     it "finds a game and temporarily notifies invitees" do
       stub_const('TeamChannel', team_channel_spy)
 
