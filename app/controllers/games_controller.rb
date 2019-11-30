@@ -39,4 +39,26 @@ class GamesController < ApplicationController
 
     render json: json
   end
+
+  def rendezvous
+    team = Member.find_by(id: bearer_token).team
+    game = Game.find(params[:id])
+
+    game.participations.where(team: team).each{|p| p.do_rendezvous!}
+
+    if game.participations.all?(&:may_schedule?)
+      game.participations.each(&:schedule!)
+    end
+
+    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+
+    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
+      TeamChannel.broadcast_to(other_team, {
+        type: 'invitation', # FIXME remove/rename wrapper?
+        content: json
+      })
+    end
+
+    render json: json
+  end
 end

@@ -111,4 +111,60 @@ RSpec.describe "Games", type: :request do
       end
     end
   end
+
+  describe "PATCH /games/:id/rendezvous" do
+    let(:another_team) { Team.create }
+    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "rendezvousing") }
+
+    before do
+      team.participations.each{|p| p.invite && p.accept && p.rendezvous! }
+      other_team.participations.first.invite!
+      other_team.participations.first.accept!
+      other_team.participations.first.rendezvous!
+    end
+
+    it "rendezvouses and notifies other participators" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      patch "/games/#{game.id}/rendezvous", headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(200)
+
+
+      json_result = JSON.parse(response.body)
+
+      participations = json_result["included"].select{|included| included["type"] == "participation"}
+
+      team_participation = participations.find{|included| included["id"] == team.participations.first.id.to_s}
+      expect(team_participation["attributes"]["state"]).to eq("rendezvoused")
+
+      other_team_participation = participations.find{|included| included["id"] == other_team.participations.first.id.to_s}
+      expect(other_team_participation["attributes"]["state"]).to eq("rendezvousing")
+
+      another_team_participation = participations.find{|included| included["id"] == another_participation.id.to_s}
+      expect(another_team_participation["attributes"]["state"]).to eq("rendezvousing")
+
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+    end
+
+    context "when all other participations have been rendezvoused" do
+      before do
+        another_participation.do_rendezvous! # FIXME obvs these names are out of control
+        other_team.participations.first.do_rendezvous!
+      end
+
+      it "moves participations to scheduled and notifies other teams" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/rendezvous", headers: { "Authorization" => "Bearer #{member.token}" }
+        expect(response).to have_http_status(200)
+
+        json_result = JSON.parse(response.body)
+        expect(json_result["included"].select{|i| i["type"] == "participation"}.map{|p| p["attributes"]["state"]}).to all(eq("scheduled"))
+
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      end
+    end
+  end
 end
