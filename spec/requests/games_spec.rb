@@ -90,5 +90,25 @@ RSpec.describe "Games", type: :request do
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
     end
+
+    context "when all other participations have been accepted" do
+      before do
+        other_team.participations.first.invite!
+        other_team.participations.first.accept!
+      end
+
+      it "moves participations to rendezvousing and notifies other teams" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
+        expect(response).to have_http_status(200)
+
+        json_result = JSON.parse(response.body)
+        expect(json_result["included"].select{|i| i["type"] == "participation"}.map{|p| p["attributes"]["state"]}).to all(eq("rendezvousing"))
+
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      end
+    end
   end
 end

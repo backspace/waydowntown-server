@@ -24,6 +24,10 @@ class GamesController < ApplicationController
     game.participations.where(team: team).each{|p| p.accept!}
     game.participations.where.not(team: team).each{|p| p.invite! if p.may_invite? }
 
+    if game.participations.all?(&:may_rendezvous?)
+      game.participations.each(&:rendezvous!)
+    end
+
     json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|

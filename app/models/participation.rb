@@ -6,7 +6,7 @@ class Participation < ApplicationRecord
 
   aasm do
     state :unsent, initial: true
-    state :invited, :accepted
+    state :invited, :accepted, :rendezvousing
 
     event :invite do
       transitions from: [:unsent, :invited], to: :invited
@@ -14,6 +14,10 @@ class Participation < ApplicationRecord
 
     event :accept do
       transitions from: [:invited, :accepted], to: :accepted
+    end
+
+    event :rendezvous do
+      transitions from: :accepted, to: :rendezvousing
     end
   end
 end
