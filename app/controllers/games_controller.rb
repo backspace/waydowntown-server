@@ -67,4 +67,25 @@ class GamesController < ApplicationController
 
     render json: json
   end
+
+  def report
+    team = Member.find_by(id: bearer_token).team
+    game = Game.find(params[:id])
+
+    participation = game.participations.find_by(team: team)
+    participation.finish
+    participation.result = params[:result]
+    participation.save
+
+    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+
+    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
+      TeamChannel.broadcast_to(other_team, {
+        type: 'invitation', # FIXME remove/rename wrapper?
+        content: json
+      })
+    end
+
+    render json: json
+  end
 end
