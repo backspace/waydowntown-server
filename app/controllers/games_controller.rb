@@ -24,8 +24,8 @@ class GamesController < ApplicationController
     game.participations.where(team: team).each{|p| p.accept!}
     game.participations.where.not(team: team).each{|p| p.invite! if p.may_invite? }
 
-    if game.participations.all?(&:may_rendezvous?)
-      game.participations.each(&:rendezvous!)
+    if game.participations.all?(&:may_converge?)
+      game.participations.each(&:converge!)
     end
 
     json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
@@ -40,11 +40,11 @@ class GamesController < ApplicationController
     render json: json
   end
 
-  def rendezvous
+  def arrive
     team = Member.find_by(id: bearer_token).team
     game = Game.find(params[:id])
 
-    game.participations.where(team: team).each{|p| p.do_rendezvous!}
+    game.participations.where(team: team).each{|p| p.arrive!}
 
     if game.participations.all?(&:may_schedule?)
       game.participations.each(&:schedule!)
