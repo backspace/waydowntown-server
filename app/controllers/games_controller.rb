@@ -48,7 +48,11 @@ class GamesController < ApplicationController
 
     if game.participations.all?(&:may_schedule?)
       game.participations.each(&:schedule!)
-      game.begins_at = Time.current + 30.seconds
+
+      current = Time.current
+      game.begins_at = current + 30.seconds
+      game.ends_at = current + 40.seconds
+
       game.save
     end
 

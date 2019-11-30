@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 2019_11_30_053631) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "begins_at"
+    t.datetime "ends_at"
     t.index ["incarnation_id"], name: "index_games_on_incarnation_id"
   end
 

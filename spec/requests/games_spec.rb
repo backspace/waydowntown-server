@@ -176,6 +176,7 @@ RSpec.describe "Games", type: :request do
         game.reload
         # FIXME this testing-via-JSON is a faux pas clearly, abandoning it here
         expect(game.begins_at).to eq(Time.current + 30.seconds)
+        expect(game.ends_at).to eq(Time.current + 40.seconds)
       end
     end
   end
