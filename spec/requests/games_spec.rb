@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Games", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:member) { Member.create(name: 'me', team: team) }
   let(:team) { Team.create(name: 'us') }
   let(:other_team) { Team.create(name: 'them') }
@@ -151,6 +153,12 @@ RSpec.describe "Games", type: :request do
       before do
         another_participation.arrive!
         other_team.participations.first.arrive!
+
+        freeze_time
+      end
+
+      after do
+        travel_back
       end
 
       it "moves participations to scheduled and notifies other teams" do
@@ -164,6 +172,10 @@ RSpec.describe "Games", type: :request do
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+
+        game.reload
+        # FIXME this testing-via-JSON is a faux pas clearly, abandoning it here
+        expect(game.begins_at).to eq(Time.current + 30.seconds)
       end
     end
   end

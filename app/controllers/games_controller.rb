@@ -48,6 +48,8 @@ class GamesController < ApplicationController
 
     if game.participations.all?(&:may_schedule?)
       game.participations.each(&:schedule!)
+      game.begins_at = Time.current + 30.seconds
+      game.save
     end
 
     json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
