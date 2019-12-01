@@ -37,25 +37,8 @@ RSpec.describe "Games", type: :request do
       post '/games/request', headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
-      expect_relationship key: 'incarnation',
-        type: 'incarnation',
-        id: incarnation.id.to_s,
-        included: true
-
-      Participation.all.each do |participation|
-        expect_json('data.relationships.participations.data.?', type: 'participation', id: participation.id.to_s)
-      end
-
-      # FIXME why is this so painful; neither jsonapi_expectations nor Airborne supports what I need it seems
-      json_result = JSON.parse(response.body)
-      included_initiator_participation = json_result["included"].find{|included| included["type"] == "participation" && included["attributes"]["initiator"]}
-
-      expect(included_initiator_participation["relationships"]["team"]["data"]["id"]).to eq(team.id.to_s)
-      expect(included_initiator_participation["attributes"]["state"]).to eq("invited")
-
-      expect_json('included.?', type: 'concept', id: concept.id.to_s)
-      expect_json('included.?', type: 'team', id: team.id.to_s)
-      expect_json('included.?', type: 'team', id: other_team.id.to_s)
+      expect(Participation.find_by(team: team)).to be_initiator
+      expect(Participation.find_by(team: other_team)).to_not be_initiator
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
     end
@@ -75,19 +58,9 @@ RSpec.describe "Games", type: :request do
       patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
-
-      json_result = JSON.parse(response.body)
-
-      participations = json_result["included"].select{|included| included["type"] == "participation"}
-
-      team_participation = participations.find{|included| included["id"] == team.participations.first.id.to_s}
-      expect(team_participation["attributes"]["state"]).to eq("accepted")
-
-      other_team_participation = participations.find{|included| included["id"] == other_team.participations.first.id.to_s}
-      expect(other_team_participation["attributes"]["state"]).to eq("invited")
-
-      another_team_participation = participations.find{|included| included["id"] == another_participation.id.to_s}
-      expect(another_team_participation["attributes"]["state"]).to eq("accepted")
+      expect(Participation.find_by(team: team)).to be_accepted
+      expect(Participation.find_by(team: other_team)).to be_invited
+      expect(Participation.find_by(team: another_team)).to be_accepted
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
@@ -105,8 +78,7 @@ RSpec.describe "Games", type: :request do
         patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
         expect(response).to have_http_status(200)
 
-        json_result = JSON.parse(response.body)
-        expect(json_result["included"].select{|i| i["type"] == "participation"}.map{|p| p["attributes"]["state"]}).to all(eq("converging"))
+        expect(Participation.all).to all(be_converging)
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
@@ -131,19 +103,9 @@ RSpec.describe "Games", type: :request do
       patch "/games/#{game.id}/arrive", headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
-
-      json_result = JSON.parse(response.body)
-
-      participations = json_result["included"].select{|included| included["type"] == "participation"}
-
-      team_participation = participations.find{|included| included["id"] == team.participations.first.id.to_s}
-      expect(team_participation["attributes"]["state"]).to eq("arrived")
-
-      other_team_participation = participations.find{|included| included["id"] == other_team.participations.first.id.to_s}
-      expect(other_team_participation["attributes"]["state"]).to eq("converging")
-
-      another_team_participation = participations.find{|included| included["id"] == another_participation.id.to_s}
-      expect(another_team_participation["attributes"]["state"]).to eq("converging")
+      expect(Participation.find_by(team: team)).to be_arrived
+      expect(Participation.find_by(team: other_team)).to be_converging
+      expect(Participation.find_by(team: another_team)).to be_converging
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
@@ -167,16 +129,13 @@ RSpec.describe "Games", type: :request do
         patch "/games/#{game.id}/arrive", headers: { "Authorization" => "Bearer #{member.token}" }
         expect(response).to have_http_status(200)
 
-        json_result = JSON.parse(response.body)
-        expect(json_result["included"].select{|i| i["type"] == "participation"}.map{|p| p["attributes"]["state"]}).to all(eq("scheduled"))
+        expect(Participation.all).to all(be_scheduled)
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
 
-        game.reload
-        # FIXME this testing-via-JSON is a faux pas clearly, abandoning it here
-        expect(game.begins_at).to eq(Time.current + 30.seconds)
-        expect(game.ends_at).to eq(Time.current + 40.seconds)
+        expect(Game.first.begins_at).to eq(Time.current + 30.seconds)
+        expect(Game.first.ends_at).to eq(Time.current + 40.seconds)
       end
     end
   end
