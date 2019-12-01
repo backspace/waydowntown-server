@@ -14,7 +14,7 @@ class GamesController < ApplicationController
 
     json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
 
-    render json: json
+    render json: json, status: :created
   end
 
   def accept

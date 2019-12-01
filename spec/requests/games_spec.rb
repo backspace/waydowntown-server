@@ -35,7 +35,7 @@ RSpec.describe "Games", type: :request do
       allow(FindGames).to receive(:new).with(team).and_return(finder)
 
       post '/games/request', headers: { "Authorization" => "Bearer #{member.token}" }
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(201)
 
       expect(Participation.find_by(team: team)).to be_initiator
       expect(Participation.find_by(team: other_team)).to_not be_initiator

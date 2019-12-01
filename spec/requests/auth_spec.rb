@@ -7,7 +7,7 @@ RSpec.describe "Auth", type: :request do
 
     it "returns the token’s team" do
       post '/auth', headers: { "Authorization" => "Bearer #{member.token}" }
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(201)
 
       expect_record member, type: "member"
       expect_relationship key: "team", type: "team", id: team.id.to_s, included: true
