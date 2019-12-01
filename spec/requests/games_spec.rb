@@ -26,7 +26,7 @@ RSpec.describe "Games", type: :request do
   end
 
   describe "POST /games" do
-    it "finds a game and temporarily notifies invitees" do
+    it "finds a game but sends out no notifications" do
       stub_const('TeamChannel', team_channel_spy)
 
       finder = double
