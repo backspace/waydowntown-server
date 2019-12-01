@@ -32,7 +32,7 @@ class GamesController < ApplicationController
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
-        type: 'invitation',
+        type: 'changes',
         content: json
       })
     end
@@ -60,7 +60,7 @@ class GamesController < ApplicationController
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
-        type: 'invitation', # FIXME remove/rename wrapper?
+        type: 'changes',
         content: json
       })
     end
@@ -81,7 +81,7 @@ class GamesController < ApplicationController
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
-        type: 'invitation', # FIXME remove/rename wrapper?
+        type: 'changes',
         content: json
       })
     end
