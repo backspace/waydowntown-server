@@ -12,12 +12,6 @@
 
 ActiveRecord::Schema.define(version: 2019_11_30_192514) do
 
-  create_table "concepts", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "games", force: :cascade do |t|
     t.integer "incarnation_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -28,10 +22,9 @@ ActiveRecord::Schema.define(version: 2019_11_30_192514) do
   end
 
   create_table "incarnations", force: :cascade do |t|
-    t.integer "concept_id", null: false
+    t.string "concept_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["concept_id"], name: "index_incarnations_on_concept_id"
   end
 
   create_table "members", force: :cascade do |t|
@@ -65,7 +58,6 @@ ActiveRecord::Schema.define(version: 2019_11_30_192514) do
   end
 
   add_foreign_key "games", "incarnations"
-  add_foreign_key "incarnations", "concepts"
   add_foreign_key "members", "teams"
   add_foreign_key "participations", "games"
   add_foreign_key "participations", "teams"

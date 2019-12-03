@@ -7,8 +7,7 @@ RSpec.describe "Games", type: :request do
   let(:other_team) { Team.create(name: 'them') }
 
   let!(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
-  let(:incarnation) { Incarnation.create(concept: concept) }
-  let(:concept) { Concept.create(name: 'a concept') }
+  let(:incarnation) { Incarnation.create }
 
   let(:team_channel_spy) { class_spy('TeamChannel') }
 

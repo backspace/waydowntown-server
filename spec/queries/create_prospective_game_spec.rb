@@ -2,8 +2,7 @@ RSpec.describe CreateProspectiveGame do
   let(:requesting_team) { Team.create(name: 'us') }
   let(:other_team) { Team.create(name: 'them') }
 
-  let(:concept) { Concept.create }
-  let(:incarnation) { Incarnation.create(concept: concept) }
+  let(:incarnation) { Incarnation.create }
   let(:game) { Game.new(teams: [requesting_team, other_team], incarnation: incarnation) }
 
   subject { described_class.new(requesting_team, game).call() }

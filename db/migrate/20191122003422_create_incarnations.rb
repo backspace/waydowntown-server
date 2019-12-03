@@ -1,7 +1,7 @@
 class CreateIncarnations < ActiveRecord::Migration[6.0]
   def change
     create_table :incarnations do |t|
-      t.references :concept, null: false, foreign_key: true
+      t.string :concept_id
 
       t.timestamps
     end
