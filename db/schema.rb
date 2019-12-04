@@ -12,8 +12,11 @@
 
 ActiveRecord::Schema.define(version: 2019_11_30_192514) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "games", force: :cascade do |t|
-    t.integer "incarnation_id", null: false
+    t.bigint "incarnation_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "begins_at"
@@ -31,15 +34,15 @@ ActiveRecord::Schema.define(version: 2019_11_30_192514) do
     t.string "name"
     t.decimal "lat"
     t.decimal "lon"
-    t.integer "team_id", null: false
+    t.bigint "team_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["team_id"], name: "index_members_on_team_id"
   end
 
   create_table "participations", force: :cascade do |t|
-    t.integer "game_id", null: false
-    t.integer "team_id", null: false
+    t.bigint "game_id", null: false
+    t.bigint "team_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "initiator", default: false
