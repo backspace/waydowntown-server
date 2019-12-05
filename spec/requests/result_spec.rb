@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Games", type: :request do
+RSpec.describe "Result", type: :request do
 
   let(:member) { Member.create(name: 'me', team: team) }
   let(:team) { Team.create(name: 'us') }
