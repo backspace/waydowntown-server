@@ -39,7 +39,8 @@ ActiveRecord::Schema.define(version: 2019_12_05_042309) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "last_subscribed"
     t.datetime "last_unsubscribed"
-    t.string "device_id"
+    t.string "registration_id"
+    t.string "registration_type"
     t.index ["team_id"], name: "index_members_on_team_id"
   end
 
