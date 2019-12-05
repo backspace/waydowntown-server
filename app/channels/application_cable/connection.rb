@@ -1,16 +1,16 @@
 module ApplicationCable
   class Connection < ActionCable::Connection::Base
-    identified_by :current_team
+    identified_by :current_member
 
     def connect
-      self.current_team = find_verified_team
+      self.current_member = find_verified_member
     end
 
-    protected def find_verified_team
+    protected def find_verified_member
       member = Member.find_by(id: request.params[:token])
 
       reject_unauthorized_connection unless member
-      member.team
+      member
     end
   end
 end
