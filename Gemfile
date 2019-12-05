@@ -62,3 +62,7 @@ gem 'rack-cors'
 group :test do
   gem 'jsonapi_expectations', require: false
 end
+
+group :production do
+  gem 'redis', '~> 4.0'
+end
