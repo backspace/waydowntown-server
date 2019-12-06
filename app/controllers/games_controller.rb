@@ -22,7 +22,10 @@ class GamesController < ApplicationController
     game = Game.find(params[:id])
 
     game.participations.where(team: team).each{|p| p.accept!}
-    game.participations.where.not(team: team).each{|p| p.invite! if p.may_invite? }
+    game.participations.where.not(team: team).select(&:may_invite?).each do |p|
+      p.invite!
+      Notifier.notify(p.team, "#{team.name} invited you to a game")
+    end
 
     if game.participations.all?(&:may_converge?)
       game.participations.each(&:converge!)

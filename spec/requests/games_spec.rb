@@ -11,6 +11,7 @@ RSpec.describe "Games", type: :request do
   let(:incarnation) { Incarnation.create }
 
   let(:team_channel_spy) { class_spy('TeamChannel') }
+  let(:notifier_spy) { class_spy('Notifier')}
 
   describe "GET /games" do
     let!(:other_game) { Game.create(incarnation: incarnation) }
@@ -51,8 +52,9 @@ RSpec.describe "Games", type: :request do
       team.participations.each{|p| p.invite! }
     end
 
-    it "accepts a requested game and invites unsent participations" do
+    it "accepts a requested game and invites/notifies unsent participations" do
       stub_const('TeamChannel', team_channel_spy)
+      stub_const('Notifier', notifier_spy)
 
       patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
@@ -63,6 +65,10 @@ RSpec.describe "Games", type: :request do
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+
+      expect(notifier_spy).to have_received(:notify).once.with(other_team, "#{team.name} invited you to a game")
+      expect(notifier_spy).not_to have_received(:notify).with(another_team, anything)
+      expect(notifier_spy).not_to have_received(:notify).with(team, anything)
     end
 
     context "when all other participations have been accepted" do
