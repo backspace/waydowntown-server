@@ -7,8 +7,13 @@ class GamesController < ApplicationController
   def find
     team = Member.find_by(id: bearer_token).team
 
-    games = FindGames.new(team).call
-    game = games.first
+    if params[:concept_id] && params[:team_id]
+      incarnation = Incarnation.find_by(concept_id: params[:concept_id])
+      game = Game.create(incarnation: incarnation, teams: [team, Team.find(params[:team_id])])
+    else
+      games = FindGames.new(team).call
+      game = games.first
+    end
 
     CreateProspectiveGame.new(team, game).call
 

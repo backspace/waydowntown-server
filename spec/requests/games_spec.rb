@@ -8,7 +8,7 @@ RSpec.describe "Games", type: :request do
   let(:other_team) { Team.create(name: 'them') }
 
   let!(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
-  let(:incarnation) { Incarnation.create }
+  let(:incarnation) { Incarnation.create(concept_id: "tap") }
 
   let(:team_channel_spy) { class_spy('TeamChannel') }
   let(:notifier_spy) { class_spy('Notifier')}
@@ -41,6 +41,17 @@ RSpec.describe "Games", type: :request do
       expect(Participation.find_by(team: other_team)).to_not be_initiator
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
+    end
+
+    it "creates a game with requested relationships" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      post '/games/request', params: { concept_id: "tap", team_id: other_team.id }, headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(201)
+
+      game = Game.last
+      expect(game.incarnation.concept_id).to eq("tap")
+      expect(game.teams).to eq([team, other_team])
     end
   end
 
