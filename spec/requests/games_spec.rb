@@ -53,6 +53,17 @@ RSpec.describe "Games", type: :request do
       expect(game.incarnation.concept_id).to eq("tap")
       expect(game.teams).to eq([team, other_team])
     end
+
+    it "creates a solo game with requested concept" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      post '/games/request', params: { concept_id: "tap", }, headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(201)
+
+      game = Game.last
+      expect(game.incarnation.concept_id).to eq("tap")
+      expect(game.teams).to eq([team])
+    end
   end
 
   describe "PATCH /games/:id/accept" do
