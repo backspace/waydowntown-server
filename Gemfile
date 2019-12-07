@@ -59,6 +59,7 @@ gem 'aasm'
 gem 'fast_jsonapi'
 gem 'houston'
 gem 'rack-cors'
+gem 'sentry-raven'
 
 group :test do
   gem 'jsonapi_expectations', require: false

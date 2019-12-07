@@ -25,3 +25,7 @@ module Waydowntown
     end
   end
 end
+
+Raven.configure do |config|
+  config.dsn = 'https://29f8bdeccb01470b875d4a34cded55b8:01df7d7d1e59440eaaa3ba3a4caed7c7@sentry.io/1848898'
+end
