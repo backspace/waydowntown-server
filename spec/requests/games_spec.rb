@@ -166,4 +166,27 @@ RSpec.describe "Games", type: :request do
       end
     end
   end
+
+  describe "PATCH /games/:id/cancel" do
+    let(:another_team) { Team.create }
+    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "accepted") }
+
+    before do
+      team.participations.each{|p| p.invite! }
+    end
+
+    it "cancels a game and notifies participations" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      patch "/games/#{game.id}/cancel", headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(200)
+
+      expect(Participation.find_by(team: team)).to be_cancelled
+      expect(Participation.find_by(team: other_team)).to be_dismissed
+      expect(Participation.find_by(team: another_team)).to be_cancelled
+
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+    end
+  end
 end

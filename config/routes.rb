@@ -6,6 +6,8 @@ Rails.application.routes.draw do
 
   patch 'games/:id/report', to: 'games#report'
 
+  patch 'games/:id/cancel', to: 'games#cancel'
+
   resources :games, only: [:index]
   resources :members, only: [:update]
   resources :teams, only: [:index]
