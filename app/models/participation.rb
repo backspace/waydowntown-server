@@ -37,5 +37,9 @@ class Participation < ApplicationRecord
       transitions from: [:invited, :accepted], to: :cancelled
       transitions from: :unsent, to: :dismissed
     end
+
+    event :dismiss do
+      transitions from: :cancelled, to: :dismissed
+    end
   end
 end

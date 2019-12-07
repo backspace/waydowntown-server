@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   patch 'games/:id/report', to: 'games#report'
 
   patch 'games/:id/cancel', to: 'games#cancel'
+  patch 'games/:id/dismiss', to: 'games#dismiss'
 
   resources :games, only: [:index]
   resources :members, only: [:update]

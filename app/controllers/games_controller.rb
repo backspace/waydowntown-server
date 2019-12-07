@@ -121,4 +121,15 @@ class GamesController < ApplicationController
 
     render json: json
   end
+
+  def dismiss
+    team = Member.find_by(id: bearer_token).team
+    game = Game.find(params[:id])
+
+    game.participations.find_by(team: team).dismiss!
+
+    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+
+    render json: json
+  end
 end
