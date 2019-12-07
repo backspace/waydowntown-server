@@ -1,7 +1,7 @@
 class GamesController < ApplicationController
   def index
     team = Member.find_by(id: bearer_token).team
-    render json: GameSerializer.new(team.games, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    render json: game_json(team.games)
   end
 
   def find
@@ -24,7 +24,7 @@ class GamesController < ApplicationController
 
     CreateProspectiveGame.new(team, game).call
 
-    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    json = game_json(game)
 
     render json: json, status: :created
   end
@@ -43,7 +43,7 @@ class GamesController < ApplicationController
       game.participations.each(&:converge!)
     end
 
-    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    json = game_json(game)
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
@@ -71,7 +71,7 @@ class GamesController < ApplicationController
       game.save
     end
 
-    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    json = game_json(game)
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
@@ -92,7 +92,7 @@ class GamesController < ApplicationController
     participation.result = params[:result]
     participation.save
 
-    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    json = game_json(game)
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
@@ -110,7 +110,7 @@ class GamesController < ApplicationController
 
     game.participations.each(&:cancel!)
 
-    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    json = game_json(game)
 
     game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
       TeamChannel.broadcast_to(other_team, {
@@ -128,8 +128,10 @@ class GamesController < ApplicationController
 
     game.participations.find_by(team: team).dismiss!
 
-    json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    render json: game_json(game)
+  end
 
-    render json: json
+  protected def game_json(game)
+    GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
   end
 end
