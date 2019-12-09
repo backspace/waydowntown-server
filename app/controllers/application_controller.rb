@@ -1,7 +1,14 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
+  before_action :authenticate_member!
   before_action :set_raven_context
+
+  private def authenticate_member!
+    member = Member.find_by(id: bearer_token)
+
+    render json: {errors: [{status: "401"}]}, status: :unauthorized unless member
+  end
 
   private def bearer_token
     pattern = /^Bearer /
