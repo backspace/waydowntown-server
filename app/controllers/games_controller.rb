@@ -1,11 +1,10 @@
 class GamesController < ApplicationController
   def index
-    team = Member.find_by(id: bearer_token).team
-    render json: game_json(team.games)
+    render json: game_json(current_team.games)
   end
 
   def find
-    team = Member.find_by(id: bearer_token).team
+    team = current_team
 
     if params[:concept_id]
       incarnation = Incarnation.find_by(concept_id: params[:concept_id])
@@ -18,7 +17,7 @@ class GamesController < ApplicationController
 
       game = Game.create(incarnation: incarnation, teams: teams)
     else
-      games = FindGames.new(team).call
+      games = FindGames.new(current_team).call
       game = games.first
     end
 
@@ -30,7 +29,7 @@ class GamesController < ApplicationController
   end
 
   def accept
-    team = Member.find_by(id: bearer_token).team
+    team = current_team
     game = Game.find(params[:id])
 
     game.participations.where(team: team).each{|p| p.accept!}
@@ -56,7 +55,7 @@ class GamesController < ApplicationController
   end
 
   def arrive
-    team = Member.find_by(id: bearer_token).team
+    team = current_team
     game = Game.find(params[:id])
 
     game.participations.where(team: team).each{|p| p.arrive!}
@@ -84,7 +83,7 @@ class GamesController < ApplicationController
   end
 
   def report
-    team = Member.find_by(id: bearer_token).team
+    team = current_team
     game = Game.find(params[:id])
 
     participation = game.participations.find_by(team: team)
@@ -105,7 +104,7 @@ class GamesController < ApplicationController
   end
 
   def cancel
-    team = Member.find_by(id: bearer_token).team
+    team = current_team
     game = Game.find(params[:id])
 
     game.participations.each(&:cancel!)
@@ -123,7 +122,7 @@ class GamesController < ApplicationController
   end
 
   def dismiss
-    team = Member.find_by(id: bearer_token).team
+    team = current_team
     game = Game.find(params[:id])
 
     game.participations.find_by(team: team).dismiss!

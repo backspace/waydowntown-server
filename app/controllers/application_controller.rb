@@ -8,6 +8,15 @@ class ApplicationController < ActionController::Base
     member = Member.find_by(id: bearer_token)
 
     render json: {errors: [{status: "401"}]}, status: :unauthorized unless member
+    member
+  end
+
+  private def current_member
+    @current_member ||= authenticate_member!
+  end
+
+  private def current_team
+    @current_team ||= current_member.team
   end
 
   private def bearer_token
