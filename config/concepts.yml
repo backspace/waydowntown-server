@@ -1,6 +1,8 @@
 "bluetooth-collector":
   name: Bluetooth Collector
+  duration: 15
 tap:
   name: Tap
+  duration: 10
 unplayed:
   name: Unplayed test game

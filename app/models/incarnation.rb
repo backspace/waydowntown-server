@@ -8,9 +8,9 @@ class Incarnation < ApplicationRecord
       yml = CONCEPTS[concept_id]
 
       if yml
-        Concept.new(id: concept_id, name: yml["name"])
+        Concept.new(id: concept_id, name: yml["name"], duration: yml["duration"])
       else
-        Concept.new(id: "unknown", name: "Unknown concept")
+        Concept.new(id: "unknown", name: "Unknown concept", duration: 10)
       end
     end
   end
