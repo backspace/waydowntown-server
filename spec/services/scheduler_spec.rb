@@ -31,4 +31,15 @@ RSpec.describe Scheduler do
       )
     end
   end
+
+  context 'with an incarnation whose duration is overridden' do
+    let(:incarnation) { Incarnation.new(concept_id: "tap", duration: 30) }
+
+    it 'schedules the game with the different duration' do
+      expect(subject).to have_attributes(
+        begins_at: Time.current + 30.seconds,
+        ends_at: Time.current + 60.seconds
+      )
+    end
+  end
 end
