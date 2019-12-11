@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_05_042309) do
+ActiveRecord::Schema.define(version: 2019_12_11_013809) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2019_12_05_042309) do
     t.datetime "last_unsubscribed"
     t.string "registration_id"
     t.string "registration_type"
+    t.datetime "last_located"
     t.index ["team_id"], name: "index_members_on_team_id"
   end
 

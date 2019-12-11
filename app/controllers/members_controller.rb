@@ -7,6 +7,10 @@ class MembersController < ApplicationController
       obj[key.underscore] = value
     end
 
+    if new_attributes["lat"] && new_attributes["lon"]
+      new_attributes["last_located"] = Time.now
+    end
+
     member.update(new_attributes)
     render json: MemberSerializer.new(member).serializable_hash
   end

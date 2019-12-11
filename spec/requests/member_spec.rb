@@ -7,6 +7,8 @@ RSpec.describe "Result", type: :request do
 
   describe "PATCH /members/:id" do
     it "stores the device id and lat/lon" do
+      beginning = Time.now
+
       json = {
         data: {
           id: member.id,
@@ -30,6 +32,8 @@ RSpec.describe "Result", type: :request do
 
       expect(member.lat).to eq(49.897561)
       expect(member.lon).to eq(-97.140272)
+
+      expect(member.last_located).to be > beginning
     end
   end
 end
