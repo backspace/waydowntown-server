@@ -124,7 +124,7 @@ RSpec.describe "Games", type: :request do
       other_team.participations.first.converge!
     end
 
-    it "meets and notifies other participators" do
+    it "meets and notifies other participants" do
       stub_const('TeamChannel', team_channel_spy)
 
       patch "/games/#{game.id}/arrive", headers: { "Authorization" => "Bearer #{member.token}" }
