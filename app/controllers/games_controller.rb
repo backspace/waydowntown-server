@@ -60,6 +60,28 @@ class GamesController < ApplicationController
 
     game.participations.where(team: team).each{|p| p.arrive!}
 
+    if game.participations.all?(&:may_represent?)
+      game.participations.each(&:represent!)
+    end
+
+    json = game_json(game)
+
+    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
+      TeamChannel.broadcast_to(other_team, {
+        type: 'changes',
+        content: json
+      })
+    end
+
+    render json: json
+  end
+
+  def represent
+    team = current_team
+    game = Game.find(params[:id])
+
+    game.participations.find_by(team: team).representations.find_by(member: current_member).update(representing: true)
+
     if game.participations.all?(&:may_schedule?)
       game.participations.each(&:schedule!)
 

@@ -4,9 +4,11 @@ class Participation < ApplicationRecord
   belongs_to :game
   belongs_to :team
 
+  has_many :representations
+
   aasm do
     state :unsent, initial: true
-    state :invited, :accepted, :converging, :arrived, :scheduled, :finished
+    state :invited, :accepted, :converging, :arrived, :representing, :scheduled, :finished
     state :cancelled, :dismissed
 
     event :invite do
@@ -25,8 +27,12 @@ class Participation < ApplicationRecord
       transitions from: :converging, to: :arrived
     end
 
+    event :represent do
+      transitions from: :arrived, to: :representing, after: Proc.new { team.members.each {|member| representations.create(member: member) } }
+    end
+
     event :schedule do
-      transitions from: :arrived, to: :scheduled
+      transitions from: :representing, to: :scheduled, guard: :all_representations_determined?
     end
 
     event :finish do
@@ -41,5 +47,9 @@ class Participation < ApplicationRecord
     event :dismiss do
       transitions from: :cancelled, to: :dismissed
     end
+  end
+
+  protected def all_representations_determined?
+    representations.where(representing: nil).empty?
   end
 end

@@ -3,8 +3,10 @@ require 'rails_helper'
 RSpec.describe "Games", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
-  let(:member) { Member.create(name: 'me', team: team) }
-  let(:team) { Team.create(name: 'us') }
+  let!(:member) { Member.create(name: 'me', team: team) }
+  let!(:team) { Team.create(name: 'us') }
+
+  let!(:other_team_member) { Member.create(name: 'other', team: other_team) }
   let(:other_team) { Team.create(name: 'them') }
 
   let!(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
@@ -139,9 +141,74 @@ RSpec.describe "Games", type: :request do
     end
 
     context "when all other participations have arrived" do
+      let!(:another_team_member_1) { Member.create(team: another_team) }
+      let!(:another_team_member_2) { Member.create(team: another_team) }
+
       before do
         another_participation.arrive!
         other_team.participations.first.arrive!
+      end
+
+      it "moves participations to representing, creates representations, and notifies other teams" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/arrive", headers: { "Authorization" => "Bearer #{member.token}" }
+        expect(response).to have_http_status(200)
+
+        expect(Participation.all).to all(be_representing)
+
+        [member, other_team_member, another_team_member_1, another_team_member_2].each_with_index do |m, i|
+          representation = Representation.find_by(member: m)
+          expect(representation).to be
+          expect(representation.representing).to be_nil
+          expect(representation.participation.team).to eq(m.team)
+        end
+
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      end
+    end
+  end
+
+  describe "PATCH /games/:id/represent" do
+    let(:another_team) { Team.create }
+    let!(:another_team_member_1) { Member.create(team: another_team) }
+    let!(:another_team_member_2) { Member.create(team: another_team) }
+    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "arrived") }
+
+    before do
+      team.participations.each{|p| p.invite && p.accept && p.converge! && p.arrive! && p.represent! }
+      other_team.participations.first.invite!
+      other_team.participations.first.accept!
+      other_team.participations.first.converge!
+      other_team.participations.first.arrive!
+      other_team.participations.first.represent!
+
+      another_participation.represent!
+    end
+
+    it "updates the representation, does not change the participation state, and notifies other participants" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      patch "/games/#{game.id}/represent", headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(200)
+
+      expect(Representation.find_by(member: member)).to be_representing
+      expect(Participation.find_by(team: team)).to be_representing
+
+      expect(Participation.find_by(team: other_team)).to be_representing
+      expect(Participation.find_by(team: another_team)).to be_representing
+
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+    end
+
+    context "when all other participants have decided on representation" do
+      before do
+        another_participation.representations.first.update(representing: true)
+        another_participation.representations.last.update(representing: false)
+
+        other_team.participations.first.representations.first.update(representing: true)
 
         freeze_time
       end
@@ -153,7 +220,7 @@ RSpec.describe "Games", type: :request do
       it "moves participations to scheduled and notifies other teams" do
         stub_const('TeamChannel', team_channel_spy)
 
-        patch "/games/#{game.id}/arrive", headers: { "Authorization" => "Bearer #{member.token}" }
+        patch "/games/#{game.id}/represent", headers: { "Authorization" => "Bearer #{member.token}" }
         expect(response).to have_http_status(200)
 
         expect(Participation.all).to all(be_scheduled)

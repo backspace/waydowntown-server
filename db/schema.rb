@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_11_051052) do
+ActiveRecord::Schema.define(version: 2019_12_12_004419) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,16 @@ ActiveRecord::Schema.define(version: 2019_12_11_051052) do
     t.index ["team_id"], name: "index_participations_on_team_id"
   end
 
+  create_table "representations", force: :cascade do |t|
+    t.bigint "member_id", null: false
+    t.bigint "participation_id", null: false
+    t.boolean "representing"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["member_id"], name: "index_representations_on_member_id"
+    t.index ["participation_id"], name: "index_representations_on_participation_id"
+  end
+
   create_table "teams", force: :cascade do |t|
     t.string "name"
     t.decimal "lat", precision: 10, scale: 6
@@ -70,4 +80,6 @@ ActiveRecord::Schema.define(version: 2019_12_11_051052) do
   add_foreign_key "members", "teams"
   add_foreign_key "participations", "games"
   add_foreign_key "participations", "teams"
+  add_foreign_key "representations", "members"
+  add_foreign_key "representations", "participations"
 end
