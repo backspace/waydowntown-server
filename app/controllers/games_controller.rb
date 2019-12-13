@@ -43,13 +43,7 @@ class GamesController < ApplicationController
     end
 
     json = game_json(game)
-
-    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
-      TeamChannel.broadcast_to(other_team, {
-        type: 'changes',
-        content: json
-      })
-    end
+    broadcast_to_other_teams(game, json)
 
     render json: json
   end
@@ -65,13 +59,7 @@ class GamesController < ApplicationController
     end
 
     json = game_json(game)
-
-    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
-      TeamChannel.broadcast_to(other_team, {
-        type: 'changes',
-        content: json
-      })
-    end
+    broadcast_to_other_teams(game, json)
 
     render json: json
   end
@@ -91,13 +79,7 @@ class GamesController < ApplicationController
     end
 
     json = game_json(game)
-
-    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
-      TeamChannel.broadcast_to(other_team, {
-        type: 'changes',
-        content: json
-      })
-    end
+    broadcast_to_other_teams(game, json)
 
     render json: json
   end
@@ -112,13 +94,7 @@ class GamesController < ApplicationController
     participation.save
 
     json = game_json(game)
-
-    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
-      TeamChannel.broadcast_to(other_team, {
-        type: 'changes',
-        content: json
-      })
-    end
+    broadcast_to_other_teams(game, json)
 
     render json: json
   end
@@ -130,13 +106,7 @@ class GamesController < ApplicationController
     game.participations.each(&:cancel!)
 
     json = game_json(game)
-
-    game.participations.where.not(team_id: team.id).map(&:team).each do |other_team|
-      TeamChannel.broadcast_to(other_team, {
-        type: 'changes',
-        content: json
-      })
-    end
+    broadcast_to_other_teams(game, json)
 
     render json: json
   end
@@ -152,5 +122,14 @@ class GamesController < ApplicationController
 
   protected def game_json(game)
     GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+  end
+
+  protected def broadcast_to_other_teams(game, json)
+    game.participations.where.not(team_id: current_team.id).map(&:team).each do |other_team|
+      TeamChannel.broadcast_to(other_team, {
+        type: 'changes',
+        content: json
+      })
+    end
   end
 end
