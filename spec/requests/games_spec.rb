@@ -265,7 +265,7 @@ RSpec.describe "Games", type: :request do
       team.participations.update(aasm_state: "cancelled")
     end
 
-    it "cancels a game and notifies participations" do
+    it "dismisses a game and sends no notifications" do
       stub_const('TeamChannel', team_channel_spy)
 
       patch "/games/#{game.id}/dismiss", headers: { "Authorization" => "Bearer #{member.token}" }
