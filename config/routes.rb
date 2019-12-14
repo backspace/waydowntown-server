@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   patch 'games/:id/represent', to: 'games#represent'
 
   patch 'games/:id/report', to: 'games#report'
+  patch 'games/:id/archive', to: 'games#archive'
 
   patch 'games/:id/cancel', to: 'games#cancel'
   patch 'games/:id/dismiss', to: 'games#dismiss'

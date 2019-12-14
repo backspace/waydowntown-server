@@ -120,6 +120,15 @@ class GamesController < ApplicationController
     render json: game_json(game)
   end
 
+  def archive
+    team = current_team
+    game = Game.find(params[:id])
+
+    game.participations.find_by(team: team).archive!
+
+    render json: game_json(game)
+  end
+
   protected def game_json(game)
     GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
   end

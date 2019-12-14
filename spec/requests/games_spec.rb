@@ -278,4 +278,26 @@ RSpec.describe "Games", type: :request do
       expect(team_channel_spy).not_to have_received(:broadcast_to)
     end
   end
+
+  describe "PATCH /games/:id/archive" do
+    let(:another_team) { Team.create }
+    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "finished") }
+
+    before do
+      team.participations.update(aasm_state: "finished")
+    end
+
+    it "archives a game and sends no notifications" do
+      stub_const('TeamChannel', team_channel_spy)
+
+      patch "/games/#{game.id}/archive", headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(200)
+
+      expect(Participation.find_by(team: team)).to be_archived
+      expect(Participation.find_by(team: other_team)).to be_unsent
+      expect(Participation.find_by(team: another_team)).to be_finished
+
+      expect(team_channel_spy).not_to have_received(:broadcast_to)
+    end
+  end
 end
