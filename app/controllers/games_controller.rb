@@ -130,7 +130,7 @@ class GamesController < ApplicationController
   end
 
   protected def game_json(game)
-    GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team']).serializable_hash
+    GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.representations']).serializable_hash
   end
 
   protected def broadcast_to_other_teams(game, json)
