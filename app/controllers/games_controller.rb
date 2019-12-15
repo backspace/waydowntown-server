@@ -68,7 +68,7 @@ class GamesController < ApplicationController
     team = current_team
     game = Game.find(params[:id])
 
-    game.participations.find_by(team: team).representations.find_by(member: current_member).update(representing: true)
+    game.participations.find_by(team: team).representations.find_by(member: current_member).update(representing: params[:representing])
 
     if game.participations.all?(&:may_schedule?)
       game.participations.each(&:schedule!)

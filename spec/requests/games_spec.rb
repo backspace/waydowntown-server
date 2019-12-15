@@ -190,7 +190,7 @@ RSpec.describe "Games", type: :request do
     it "updates the representation, does not change the participation state, and notifies other participants" do
       stub_const('TeamChannel', team_channel_spy)
 
-      patch "/games/#{game.id}/represent", headers: { "Authorization" => "Bearer #{member.token}" }
+      patch "/games/#{game.id}/represent", params: '{"representing": true}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
       expect(response).to have_http_status(200)
 
       expect(Representation.find_by(member: member)).to be_representing
@@ -220,7 +220,7 @@ RSpec.describe "Games", type: :request do
       it "moves participations to scheduled and notifies other teams" do
         stub_const('TeamChannel', team_channel_spy)
 
-        patch "/games/#{game.id}/represent", headers: { "Authorization" => "Bearer #{member.token}" }
+        patch "/games/#{game.id}/represent", params: '{"representing": false}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(200)
 
         expect(Participation.all).to all(be_scheduled)
