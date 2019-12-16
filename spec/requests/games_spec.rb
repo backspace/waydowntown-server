@@ -19,8 +19,15 @@ RSpec.describe "Games", type: :request do
 
   describe "GET /games" do
     let!(:other_game) { Game.create(incarnation: incarnation) }
+    let!(:archived_game) { Game.create(incarnation: incarnation, teams: [team]) }
+    let!(:dismissed_game) { Game.create(incarnation: incarnation, teams: [team]) }
 
-    it "finds the games for the current team" do
+    before do
+      archived_game.participations.update(aasm_state: 'archived')
+      dismissed_game.participations.update(aasm_state: 'dismissed')
+    end
+
+    it "finds the games for the current team, ignoring archived and dismissed ones" do
       get '/games', headers: headers
       expect(response).to have_http_status(200)
 

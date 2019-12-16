@@ -1,6 +1,11 @@
 class GamesController < ApplicationController
   def index
-    render json: game_json(current_team.games)
+    games = current_team.games.reject do |game|
+      participation = game.participations.find_by(team: current_team)
+      participation.archived? || participation.dismissed?
+    end
+
+    render json: game_json(games)
   end
 
   def find
