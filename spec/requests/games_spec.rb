@@ -113,6 +113,21 @@ RSpec.describe "Games", type: :request do
         expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
       end
     end
+
+    context "when the participation is in a later state" do
+      before do
+        team.participations.each(&:accept!).each(&:converge!)
+      end
+
+      it "returns a 409 and sends no notifications" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/accept", headers: { "Authorization" => "Bearer #{member.token}" }
+        expect(response).to have_http_status(409)
+
+        expect(team_channel_spy).not_to have_received(:broadcast_to)
+      end
+    end
   end
 
   describe "PATCH /games/:id/arrive" do
@@ -166,6 +181,21 @@ RSpec.describe "Games", type: :request do
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      end
+    end
+
+    context "when the participation is in a later state" do
+      before do
+        team.participations.each(&:arrive!)
+      end
+
+      it "returns a 409 and sends no notifications" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/arrive", headers: { "Authorization" => "Bearer #{member.token}" }
+        expect(response).to have_http_status(409)
+
+        expect(team_channel_spy).not_to have_received(:broadcast_to)
       end
     end
   end
@@ -232,6 +262,22 @@ RSpec.describe "Games", type: :request do
         expect(Game.first.ends_at).to eq(Time.current + 40.seconds)
       end
     end
+
+    context "when the participation is not representing" do
+      before do
+        Representation.update(representing: true)
+        team.participations.each(&:schedule!)
+      end
+
+      it "returns a 409 and sends no notifications" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/represent", params: '{"representing": false}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        expect(response).to have_http_status(409)
+
+        expect(team_channel_spy).not_to have_received(:broadcast_to)
+      end
+    end
   end
 
   describe "PATCH /games/:id/cancel" do
@@ -277,6 +323,19 @@ RSpec.describe "Games", type: :request do
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
     end
+
+    context "when the participation is not cancelled" do
+      before do
+        team.participations.update(aasm_state: "invited")
+      end
+
+      it "returns a 409" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/dismiss", headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        expect(response).to have_http_status(409)
+      end
+    end
   end
 
   describe "PATCH /games/:id/archive" do
@@ -298,6 +357,19 @@ RSpec.describe "Games", type: :request do
       expect(Participation.find_by(team: another_team)).to be_finished
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
+    end
+
+    context "when the participation is not finished" do
+      before do
+        team.participations.update(aasm_state: "invited")
+      end
+
+      it "returns a 409" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/archive", headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        expect(response).to have_http_status(409)
+      end
     end
   end
 end

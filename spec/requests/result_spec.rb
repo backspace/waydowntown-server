@@ -29,5 +29,20 @@ RSpec.describe "Result", type: :request do
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
     end
+
+    context "when the participation is not scheduled" do
+      before do
+        team.participations.update(aasm_state: "invited")
+      end
+
+      it "returns a 409" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/report", params: '{"result": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        expect(response).to have_http_status(409)
+
+        expect(team_channel_spy).not_to have_received(:broadcast_to)
+      end
+    end
   end
 end

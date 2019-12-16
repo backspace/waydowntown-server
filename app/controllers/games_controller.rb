@@ -32,7 +32,9 @@ class GamesController < ApplicationController
     team = current_team
     game = Game.find(params[:id])
 
-    game.participations.where(team: team).each{|p| p.accept!}
+    render_conflict and return unless team_participation.may_accept?
+
+    team_participation.accept!
     game.participations.where.not(team: team).select(&:may_invite?).each do |p|
       p.invite!
       Notifier.notify(p.team, "#{team.name} invited you to a game")
@@ -49,10 +51,11 @@ class GamesController < ApplicationController
   end
 
   def arrive
-    team = current_team
     game = Game.find(params[:id])
 
-    game.participations.where(team: team).each{|p| p.arrive!}
+    render_conflict and return unless team_participation.may_arrive?
+
+    team_participation.arrive!
 
     if game.participations.all?(&:may_represent?)
       game.participations.each(&:represent!)
@@ -65,10 +68,11 @@ class GamesController < ApplicationController
   end
 
   def represent
-    team = current_team
     game = Game.find(params[:id])
 
-    game.participations.find_by(team: team).representations.find_by(member: current_member).update(representing: params[:representing])
+    render_conflict and return unless team_participation.representing?
+
+    team_participation.representations.find_by(member: current_member).update(representing: params[:representing])
 
     if game.participations.all?(&:may_schedule?)
       game.participations.each(&:schedule!)
@@ -85,13 +89,13 @@ class GamesController < ApplicationController
   end
 
   def report
-    team = current_team
     game = Game.find(params[:id])
 
-    participation = game.participations.find_by(team: team)
-    participation.finish
-    participation.result = params[:result]
-    participation.save
+    render_conflict and return unless team_participation.may_finish?
+
+    team_participation.finish
+    team_participation.result = params[:result]
+    team_participation.save
 
     json = game_json(game)
     broadcast_to_other_teams(game, json)
@@ -100,7 +104,6 @@ class GamesController < ApplicationController
   end
 
   def cancel
-    team = current_team
     game = Game.find(params[:id])
 
     game.participations.each(&:cancel!)
@@ -112,19 +115,21 @@ class GamesController < ApplicationController
   end
 
   def dismiss
-    team = current_team
     game = Game.find(params[:id])
 
-    game.participations.find_by(team: team).dismiss!
+    render_conflict and return unless team_participation.may_dismiss?
+
+    team_participation.dismiss!
 
     render json: game_json(game)
   end
 
   def archive
-    team = current_team
     game = Game.find(params[:id])
 
-    game.participations.find_by(team: team).archive!
+    render_conflict and return unless team_participation.may_archive?
+
+    team_participation.archive!
 
     render json: game_json(game)
   end
@@ -140,5 +145,13 @@ class GamesController < ApplicationController
         content: json
       })
     end
+  end
+
+  protected def team_participation
+    @team_participation ||= Participation.find_by(team: current_team, game: Game.find(params[:id]))
+  end
+
+  protected def render_conflict
+    render json: {errors: [{status: "409"}]}, status: :conflict
   end
 end
