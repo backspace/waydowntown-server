@@ -98,6 +98,10 @@ class GamesController < ApplicationController
 
     render_conflict and return unless team_participation.may_finish?
 
+    member_representation = team_participation.representations.find_by(member: current_member)
+
+    render json: {errors: [{status: "403"}]}, status: :forbidden and return unless member_representation && member_representation.representing?
+
     team_participation.finish
     team_participation.result = params[:result]
     team_participation.save
