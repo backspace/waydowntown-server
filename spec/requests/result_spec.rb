@@ -46,7 +46,7 @@ RSpec.describe "Result", type: :request do
         expect(team_participation).to be_finished
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
       end
     end
 

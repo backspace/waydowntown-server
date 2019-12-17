@@ -50,7 +50,7 @@ class GamesController < ApplicationController
     end
 
     json = game_json(game)
-    broadcast_to_other_teams(game, json)
+    broadcast_to_teams(game, json)
 
     render json: json
   end
@@ -67,7 +67,7 @@ class GamesController < ApplicationController
     end
 
     json = game_json(game)
-    broadcast_to_other_teams(game, json)
+    broadcast_to_teams(game, json)
 
     render json: json
   end
@@ -88,7 +88,7 @@ class GamesController < ApplicationController
     end
 
     json = game_json(game)
-    broadcast_to_other_teams(game, json)
+    broadcast_to_teams(game, json)
 
     render json: json
   end
@@ -107,7 +107,7 @@ class GamesController < ApplicationController
     team_participation.save
 
     json = game_json(game)
-    broadcast_to_other_teams(game, json)
+    broadcast_to_teams(game, json)
 
     render json: json
   end
@@ -118,7 +118,7 @@ class GamesController < ApplicationController
     game.participations.each(&:cancel!)
 
     json = game_json(game)
-    broadcast_to_other_teams(game, json)
+    broadcast_to_teams(game, json)
 
     render json: json
   end
@@ -147,8 +147,8 @@ class GamesController < ApplicationController
     GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
   end
 
-  protected def broadcast_to_other_teams(game, json)
-    game.participations.where.not(team_id: current_team.id).map(&:team).each do |other_team|
+  protected def broadcast_to_teams(game, json)
+    game.teams.each do |other_team|
       TeamChannel.broadcast_to(other_team, {
         type: 'changes',
         content: json

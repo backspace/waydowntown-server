@@ -97,7 +97,7 @@ RSpec.describe "Games", type: :request do
       expect(Participation.find_by(team: another_team)).to be_accepted
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
 
       expect(notifier_spy).to have_received(:notify).once.with(other_team, "#{team.name} invited you to a game")
       expect(notifier_spy).not_to have_received(:notify).with(another_team, anything)
@@ -119,7 +119,7 @@ RSpec.describe "Games", type: :request do
         expect(Participation.all).to all(be_converging)
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
       end
     end
 
@@ -161,7 +161,7 @@ RSpec.describe "Games", type: :request do
       expect(Participation.find_by(team: another_team)).to be_converging
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
     end
 
     context "when all other participations have arrived" do
@@ -189,7 +189,7 @@ RSpec.describe "Games", type: :request do
         end
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
       end
     end
 
@@ -239,7 +239,7 @@ RSpec.describe "Games", type: :request do
       expect(Participation.find_by(team: another_team)).to be_representing
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
     end
 
     context "when all other participants have decided on representation" do
@@ -265,7 +265,7 @@ RSpec.describe "Games", type: :request do
         expect(Participation.all).to all(be_scheduled)
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-        expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
 
         expect(Game.first.begins_at).to eq(Time.current + 30.seconds)
         expect(Game.first.ends_at).to eq(Time.current + 40.seconds)
@@ -308,7 +308,7 @@ RSpec.describe "Games", type: :request do
       expect(Participation.find_by(team: another_team)).to be_cancelled
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
-      expect(team_channel_spy).not_to have_received(:broadcast_to).with(team, anything)
+      expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
     end
   end
 
