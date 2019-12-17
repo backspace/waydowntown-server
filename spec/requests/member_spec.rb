@@ -36,4 +36,45 @@ RSpec.describe "Result", type: :request do
       expect(member.last_located).to be > beginning
     end
   end
+
+  it "stores capabilities" do
+    beginning = Time.now
+
+    json = {
+      data: {
+        id: member.id,
+        type: "member",
+        attributes: {
+          capabilities: {
+            bluetooth: false,
+            decibels: false,
+            location: true,
+
+            exertion: true,
+            speed: true,
+            stairs: false,
+
+            fastTapping: true,
+          }
+        }
+      }
+    }.to_json
+
+    patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+    expect(response).to have_http_status(200)
+
+    member.reload
+
+    expect(member.capabilities).to eql({
+      "bluetooth" => false,
+      "decibels" => false,
+      "location" => true,
+
+      "exertion" => true,
+      "speed" => true,
+      "stairs" => false,
+
+      "fastTapping" => true,
+    })
+  end
 end

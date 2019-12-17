@@ -1,8 +1,20 @@
+PERMITTED_CAPABILITIES = [
+  "bluetooth",
+  "decibels",
+  "location",
+
+  "exertion",
+  "speed",
+  "stairs",
+
+  "fastTapping",
+]
+
 class MembersController < ApplicationController
   def update
     member = current_member # FIXME add handling for attempt to update other member?
 
-    permitted = params.permit(data: { attributes: ["lat", "lon", "registration-id", "registration-type"] })
+    permitted = params.permit(data: { attributes: ["lat", "lon", "registration-id", "registration-type", capabilities: PERMITTED_CAPABILITIES] })
     new_attributes = permitted["data"]["attributes"].to_hash.each_with_object({}) do |(key, value), obj|
       obj[key.underscore] = value
     end
