@@ -77,4 +77,18 @@ RSpec.describe "Result", type: :request do
       "fastTapping" => true,
     })
   end
+
+  it "ignores an update with no attributes" do
+    beginning = Time.now
+
+    json = {
+      data: {
+        id: member.id,
+        type: "member"
+      }
+    }.to_json
+
+    patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+    expect(response).to have_http_status(200)
+  end
 end

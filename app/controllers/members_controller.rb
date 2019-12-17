@@ -15,6 +15,9 @@ class MembersController < ApplicationController
     member = current_member # FIXME add handling for attempt to update other member?
 
     permitted = params.permit(data: { attributes: ["lat", "lon", "registration-id", "registration-type", capabilities: PERMITTED_CAPABILITIES] })
+
+    render json: MemberSerializer.new(member).serializable_hash and return unless permitted["data"]["attributes"]
+
     new_attributes = permitted["data"]["attributes"].to_hash.each_with_object({}) do |(key, value), obj|
       obj[key.underscore] = value
     end
