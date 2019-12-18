@@ -37,7 +37,7 @@ RSpec.describe "Result", type: :request do
     end
   end
 
-  it "stores capabilities" do
+  it "stores capabilities and device" do
     beginning = Time.now
 
     json = {
@@ -55,6 +55,16 @@ RSpec.describe "Result", type: :request do
             stairs: false,
 
             fastTapping: true,
+          },
+          device: {
+            cordova: "a",
+            model: "b",
+            platform: "c",
+            uuid: "d",
+            version: "e",
+            manufacturer: "f",
+            isVirtual: "g",
+            serial: "h"
           }
         }
       }
@@ -75,6 +85,17 @@ RSpec.describe "Result", type: :request do
       "stairs" => false,
 
       "fastTapping" => true,
+    })
+
+    expect(member.device).to eql({
+      "cordova" => "a",
+      "model" => "b",
+      "platform" => "c",
+      "uuid" => "d",
+      "version" => "e",
+      "manufacturer" => "f",
+      "isVirtual" => "g",
+      "serial" => "h"
     })
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_17_145524) do
+ActiveRecord::Schema.define(version: 2019_12_18_160341) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2019_12_17_145524) do
     t.string "registration_type"
     t.datetime "last_located"
     t.jsonb "capabilities", default: {}
+    t.jsonb "device", default: {}
     t.index ["team_id"], name: "index_members_on_team_id"
   end
 

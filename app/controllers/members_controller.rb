@@ -10,11 +10,30 @@ PERMITTED_CAPABILITIES = [
   "fastTapping",
 ]
 
+PERMITTED_DEVICE = [
+  "cordova",
+  "model",
+  "platform",
+  "uuid",
+  "version",
+  "manufacturer",
+  "isVirtual",
+  "serial"
+]
+
 class MembersController < ApplicationController
   def update
     member = current_member # FIXME add handling for attempt to update other member?
 
-    permitted = params.permit(data: { attributes: ["lat", "lon", "registration-id", "registration-type", capabilities: PERMITTED_CAPABILITIES] })
+    permitted = params.permit(data: {
+      attributes: [
+        "lat",
+        "lon",
+        "registration-id",
+        "registration-type",
+        capabilities: PERMITTED_CAPABILITIES,
+        device: PERMITTED_DEVICE
+      ] })
 
     render json: MemberSerializer.new(member).serializable_hash and return unless permitted["data"]["attributes"]
 
