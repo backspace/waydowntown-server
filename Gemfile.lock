@@ -47,6 +47,9 @@ GEM
     activerecord (6.0.1)
       activemodel (= 6.0.1)
       activesupport (= 6.0.1)
+    activerecord-postgis-adapter (6.0.0)
+      activerecord (~> 6.0)
+      rgeo-activerecord (~> 6.0)
     activestorage (6.0.1)
       actionpack (= 6.0.1)
       activejob (= 6.0.1)
@@ -183,6 +186,10 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+    rgeo (2.1.1)
+    rgeo-activerecord (6.2.1)
+      activerecord (>= 5.0)
+      rgeo (>= 1.0.0)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -268,6 +275,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm
+  activerecord-postgis-adapter
   bootsnap (>= 1.4.2)
   byebug
   capybara (>= 2.15)

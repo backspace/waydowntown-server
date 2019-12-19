@@ -1,6 +1,9 @@
 CONCEPTS = YAML.load_file("#{Rails.root.to_s}/config/concepts.yml")
 
 class Incarnation < ApplicationRecord
+  belongs_to :location, optional: true
+  has_many :games
+
   def concept
     if @concept
       @concept

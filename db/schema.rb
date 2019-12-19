@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_18_160341) do
+ActiveRecord::Schema.define(version: 2019_12_19_144911) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "postgis"
 
   create_table "games", force: :cascade do |t|
     t.bigint "incarnation_id", null: false
@@ -29,6 +30,18 @@ ActiveRecord::Schema.define(version: 2019_12_18_160341) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "duration"
+    t.bigint "location_id"
+    t.index ["location_id"], name: "index_incarnations_on_location_id"
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.geometry "bounds", limit: {:srid=>0, :type=>"multi_polygon"}
+    t.bigint "parent_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["parent_id"], name: "index_locations_on_parent_id"
   end
 
   create_table "members", force: :cascade do |t|
@@ -79,6 +92,7 @@ ActiveRecord::Schema.define(version: 2019_12_18_160341) do
   end
 
   add_foreign_key "games", "incarnations"
+  add_foreign_key "incarnations", "locations"
   add_foreign_key "members", "teams"
   add_foreign_key "participations", "games"
   add_foreign_key "participations", "teams"

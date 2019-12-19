@@ -56,6 +56,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # waydowntown
 gem 'aasm'
+gem 'activerecord-postgis-adapter'
 gem 'fast_jsonapi'
 gem 'houston'
 gem 'rack-cors'
