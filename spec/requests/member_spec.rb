@@ -34,6 +34,8 @@ RSpec.describe "Result", type: :request do
       expect(member.lon).to eq(-97.140272)
 
       expect(member.last_located).to be > beginning
+
+      expect(InviteMemberToNearbyIncarnationJob).to have_been_enqueued.with(member)
     end
   end
 

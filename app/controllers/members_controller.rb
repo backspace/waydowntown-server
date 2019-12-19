@@ -43,6 +43,7 @@ class MembersController < ApplicationController
 
     if new_attributes["lat"] && new_attributes["lon"]
       new_attributes["last_located"] = Time.now
+      InviteMemberToNearbyIncarnationJob.perform_later(member)
     end
 
     member.update(new_attributes)
