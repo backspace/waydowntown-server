@@ -207,8 +207,6 @@ RSpec.describe "Games", type: :request do
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
-
-        # FIXME removed assertions re start/end time but…
       end
     end
 
