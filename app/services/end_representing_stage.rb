@@ -20,13 +20,7 @@ class EndRepresentingStage
       end
     end
 
-    # FIXME fromish GameController#represent
-
-    @game.participations.each(&:schedule!)
-
     Scheduler.new(@game).schedule
-
-    @game.save
 
     json = GameSerializer.new(@game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
 

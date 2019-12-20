@@ -1,8 +1,12 @@
 RSpec.describe Scheduler do
   include ActiveSupport::Testing::TimeHelpers
 
-  let(:game) { Game.new(incarnation: incarnation) }
+  let(:game) { Game.new(incarnation: incarnation, participations: [ Participation.create(team: Team.create, aasm_state: "arrived" )]) }
   let(:incarnation) { Incarnation.new(concept_id: "tap") }
+
+  before do
+    game.participations.each(&:represent!)
+  end
 
   subject { described_class.new(game).schedule }
 
@@ -12,6 +16,10 @@ RSpec.describe Scheduler do
 
   after do
     travel_back
+  end
+
+  it 'moves the participations to scheduled' do
+    expect(subject.participations).to all( be_scheduled )
   end
 
   it 'schedules the game with tap’s duration' do

@@ -66,13 +66,8 @@ class GamesController < ApplicationController
       game.participations.each(&:represent!)
     end
 
-    # FIXME copied from #represent
     if game.participations.all?(&:may_schedule?)
-      game.participations.each(&:schedule!)
-
       Scheduler.new(game).schedule
-
-      game.save
     else
       game.representing_ends_at = Time.current + 30.seconds
       game.save
@@ -93,11 +88,7 @@ class GamesController < ApplicationController
     team_participation.representations.find_by(member: current_member).update(representing: params[:representing])
 
     if game.participations.all?(&:may_schedule?)
-      game.participations.each(&:schedule!)
-
       Scheduler.new(game).schedule
-
-      game.save
     end
 
     json = game_json(game)

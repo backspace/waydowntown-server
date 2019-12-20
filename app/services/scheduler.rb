@@ -4,6 +4,8 @@ class Scheduler
   end
 
   def schedule
+    @game.participations.each(&:schedule!)
+
     current = Time.current
     delay = 30.seconds
 
@@ -11,6 +13,8 @@ class Scheduler
 
     @game.begins_at = current + delay
     @game.ends_at = current + delay + duration
+
+    @game.save
 
     @game
   end
