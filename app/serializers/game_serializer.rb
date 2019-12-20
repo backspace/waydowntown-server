@@ -3,5 +3,5 @@ class GameSerializer
   set_key_transform :dash
   belongs_to :incarnation
   has_many :participations
-  attributes :begins_at, :ends_at
+  attributes :representing_ends_at, :begins_at, :ends_at
 end

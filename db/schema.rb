@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_19_144911) do
+ActiveRecord::Schema.define(version: 2019_12_20_023517) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2019_12_19_144911) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "begins_at"
     t.datetime "ends_at"
+    t.datetime "representing_ends_at"
     t.index ["incarnation_id"], name: "index_games_on_incarnation_id"
   end
 

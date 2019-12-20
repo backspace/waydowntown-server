@@ -73,6 +73,10 @@ class GamesController < ApplicationController
       Scheduler.new(game).schedule
 
       game.save
+    else
+      game.representing_ends_at = Time.current + 30.seconds
+      game.save
+      EndRepresentingStageJob.set(wait_until: game.representing_ends_at).perform_later(game)
     end
 
     json = game_json(game)

@@ -170,9 +170,14 @@ RSpec.describe "Games", type: :request do
       before do
         another_participation.arrive!
         other_team.participations.first.arrive!
+        freeze_time
       end
 
-      it "moves participations to representing, creates representations, and notifies other teams" do
+      after do
+        travel_back
+      end
+
+      it "moves participations to representing, creates representations, notifies other teams, and queues a job to end representing" do
         stub_const('TeamChannel', team_channel_spy)
 
         patch "/games/#{game.id}/arrive", headers: headers
@@ -195,6 +200,9 @@ RSpec.describe "Games", type: :request do
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
+
+        expect(Game.first.representing_ends_at).to eq(Time.current + 30.seconds)
+        expect(EndRepresentingStageJob).to have_been_enqueued.at(Time.current + 30.seconds).with(game)
       end
     end
 
