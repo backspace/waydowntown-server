@@ -1,7 +1,9 @@
 PERMITTED_CAPABILITIES = [
   "bluetooth",
+  "camera",
   "decibels",
   "location",
+  "ocr",
 
   "exertion",
   "speed",

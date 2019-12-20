@@ -49,8 +49,10 @@ RSpec.describe "Result", type: :request do
         attributes: {
           capabilities: {
             bluetooth: false,
+            camera: true,
             decibels: false,
             location: true,
+            ocr: true,
 
             exertion: true,
             speed: true,
@@ -79,8 +81,10 @@ RSpec.describe "Result", type: :request do
 
     expect(member.capabilities).to eql({
       "bluetooth" => false,
+      "camera" => true,
       "decibels" => false,
       "location" => true,
+      "ocr" => true,
 
       "exertion" => true,
       "speed" => true,
