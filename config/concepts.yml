@@ -4,5 +4,8 @@
 tap:
   name: Tap
   duration: 10
+"word-collector":
+  name: Word Collector
+  duration: 20
 unplayed:
   name: Unplayed test game
