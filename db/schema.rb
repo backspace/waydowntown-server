@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_20_023517) do
+ActiveRecord::Schema.define(version: 2019_12_20_171125) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(version: 2019_12_20_023517) do
     t.boolean "representing"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "archived"
     t.index ["member_id"], name: "index_representations_on_member_id"
     t.index ["participation_id"], name: "index_representations_on_participation_id"
   end

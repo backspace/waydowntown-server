@@ -2,7 +2,8 @@ class GamesController < ApplicationController
   def index
     games = current_team.games.reject do |game|
       participation = game.participations.find_by(team: current_team)
-      participation.archived? || participation.dismissed?
+      representation = participation.representations.find_by(member: current_member)
+      participation.dismissed? || (representation && representation.archived?)
     end
 
     render json: game_json(games)
@@ -140,9 +141,9 @@ class GamesController < ApplicationController
   def archive
     game = Game.find(params[:id])
 
-    render_conflict and return unless team_participation.may_archive?
+    render_conflict and return unless team_participation.finished?
 
-    team_participation.archive!
+    team_participation.representations.find_by(member: current_member).update(archived: true)
 
     render json: game_json(game)
   end

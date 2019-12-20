@@ -28,7 +28,7 @@ RSpec.describe "Games", type: :request do
     let!(:dismissed_game) { Game.create(incarnation: incarnation, teams: [team]) }
 
     before do
-      archived_game.participations.update(aasm_state: 'archived')
+      archived_game.participations.first.representations.create(member: member, archived: true)
       dismissed_game.participations.update(aasm_state: 'dismissed')
     end
 
@@ -351,20 +351,21 @@ RSpec.describe "Games", type: :request do
   end
 
   describe "PATCH /games/:id/archive" do
-    let(:another_team) { Team.create }
-    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "finished") }
+    let(:team_participation) { Participation.find_by(team: team)}
+
+    let!(:member_representation) { Representation.create(member: member, participation: team_participation) }
+    let!(:other_team_member_representation) { Representation.create(member: other_team_member, participation: team_participation) }
 
     before do
-      team.participations.update(aasm_state: "finished")
+      team_participation.update(aasm_state: "finished")
     end
 
-    it "archives a game and does not channel" do
+    it "marks the representation as archived and does not channel" do
       patch "/games/#{game.id}/archive", headers: headers
       expect(response).to have_http_status(200)
 
-      expect(Participation.find_by(team: team)).to be_archived
-      expect(Participation.find_by(team: other_team)).to be_unsent
-      expect(Participation.find_by(team: another_team)).to be_finished
+      expect(Representation.find_by(member: member)).to be_archived
+      expect(Representation.find_by(member: other_team_member)).not_to be_archived
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
     end
