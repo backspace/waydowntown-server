@@ -17,6 +17,11 @@ RSpec.describe "Games", type: :request do
 
   let(:headers) { { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" } }
 
+  before do
+    stub_const('TeamChannel', team_channel_spy)
+    stub_const('Notifier', notifier_spy)
+  end
+
   describe "GET /games" do
     let!(:other_game) { Game.create(incarnation: incarnation) }
     let!(:archived_game) { Game.create(incarnation: incarnation, teams: [team]) }
@@ -38,8 +43,6 @@ RSpec.describe "Games", type: :request do
 
   describe "POST /games" do
     it "finds a game but sends out no notifications" do
-      stub_const('TeamChannel', team_channel_spy)
-
       finder = double
       allow(finder).to receive(:call).and_return([game])
 
@@ -55,8 +58,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "creates a game with requested relationships" do
-      stub_const('TeamChannel', team_channel_spy)
-
       post '/games/request', params: { concept_id: "tap", team_id: other_team.id }, headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(201)
 
@@ -66,8 +67,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "creates a solo game with requested concept" do
-      stub_const('TeamChannel', team_channel_spy)
-
       post '/games/request', params: { concept_id: "tap", }, headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(201)
 
@@ -86,9 +85,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "accepts a requested game and invites/notifies unsent participations" do
-      stub_const('TeamChannel', team_channel_spy)
-      stub_const('Notifier', notifier_spy)
-
       patch "/games/#{game.id}/accept", headers: headers
       expect(response).to have_http_status(200)
 
@@ -111,8 +107,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "moves participations to converging and notifies other teams" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/accept", headers: headers
         expect(response).to have_http_status(200)
 
@@ -129,8 +123,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "returns a 409 and sends no notifications" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/accept", headers: headers
         expect(response).to have_http_status(409)
 
@@ -148,8 +140,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "meets and notifies other participants" do
-      stub_const('TeamChannel', team_channel_spy)
-
       patch "/games/#{game.id}/arrive", headers: headers
       expect(response).to have_http_status(200)
 
@@ -178,8 +168,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "moves participations to representing, creates representations, notifies other teams, and queues a job to end representing" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/arrive", headers: headers
         expect(response).to have_http_status(200)
 
@@ -212,8 +200,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "moves participations to scheduled and notifies other teams" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/arrive", headers: headers
         expect(response).to have_http_status(200)
 
@@ -232,8 +218,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "returns a 409 and sends no notifications" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/arrive", headers: headers
         expect(response).to have_http_status(409)
 
@@ -260,8 +244,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "updates the representation, does not change the participation state, and notifies other participants" do
-      stub_const('TeamChannel', team_channel_spy)
-
       patch "/games/#{game.id}/represent", params: '{"representing": true}', headers: headers
       expect(response).to have_http_status(200)
 
@@ -290,8 +272,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "moves participations to scheduled and notifies other teams" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/represent", params: '{"representing": false}', headers: headers
         expect(response).to have_http_status(200)
 
@@ -312,8 +292,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "returns a 409 and sends no notifications" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/represent", params: '{"representing": false}', headers: headers
         expect(response).to have_http_status(409)
 
@@ -331,8 +309,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "cancels a game and notifies participations" do
-      stub_const('TeamChannel', team_channel_spy)
-
       patch "/games/#{game.id}/cancel", headers: headers
       expect(response).to have_http_status(200)
 
@@ -354,8 +330,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "dismisses a game and sends no notifications" do
-      stub_const('TeamChannel', team_channel_spy)
-
       patch "/games/#{game.id}/dismiss", headers: headers
       expect(response).to have_http_status(200)
 
@@ -372,8 +346,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "returns a 409" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/dismiss", headers: headers
         expect(response).to have_http_status(409)
       end
@@ -389,8 +361,6 @@ RSpec.describe "Games", type: :request do
     end
 
     it "archives a game and sends no notifications" do
-      stub_const('TeamChannel', team_channel_spy)
-
       patch "/games/#{game.id}/archive", headers: headers
       expect(response).to have_http_status(200)
 
@@ -407,8 +377,6 @@ RSpec.describe "Games", type: :request do
       end
 
       it "returns a 409" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/archive", headers: headers
         expect(response).to have_http_status(409)
       end
