@@ -63,7 +63,7 @@ RSpec.describe "Games", type: :request do
 
       game = Game.last
       expect(game.incarnation.concept_id).to eq("tap")
-      expect(game.teams).to eq([team, other_team])
+      expect(game.teams).to contain_exactly(team, other_team)
     end
 
     it "creates a solo game with requested concept" do
