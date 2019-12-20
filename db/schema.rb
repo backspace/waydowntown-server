@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_20_171125) do
+ActiveRecord::Schema.define(version: 2019_12_20_185125) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,7 +69,6 @@ ActiveRecord::Schema.define(version: 2019_12_20_171125) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "initiator", default: false
     t.string "aasm_state"
-    t.integer "result"
     t.index ["game_id"], name: "index_participations_on_game_id"
     t.index ["team_id"], name: "index_participations_on_team_id"
   end
@@ -81,6 +80,7 @@ ActiveRecord::Schema.define(version: 2019_12_20_171125) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "archived"
+    t.integer "result"
     t.index ["member_id"], name: "index_representations_on_member_id"
     t.index ["participation_id"], name: "index_representations_on_participation_id"
   end

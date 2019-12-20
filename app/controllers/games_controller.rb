@@ -108,8 +108,10 @@ class GamesController < ApplicationController
     render json: {errors: [{status: "403"}]}, status: :forbidden and return unless member_representation && member_representation.representing?
 
     team_participation.finish
-    team_participation.result = params[:result]
     team_participation.save
+
+    member_representation.result = params[:result]
+    member_representation.save
 
     json = game_json(game)
     broadcast_to_teams(game, json)

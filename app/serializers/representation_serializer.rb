@@ -2,5 +2,5 @@ class RepresentationSerializer
   include FastJsonapi::ObjectSerializer
   belongs_to :member
   belongs_to :participation
-  attributes :representing, :archived
+  attributes :representing, :result, :archived
 end

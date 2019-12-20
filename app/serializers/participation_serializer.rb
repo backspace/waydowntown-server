@@ -3,7 +3,7 @@ class ParticipationSerializer
   belongs_to :game
   belongs_to :team
   has_many :representations
-  attributes :initiator, :result
+  attributes :initiator
 
   attribute :state do |object|
     object.aasm_state

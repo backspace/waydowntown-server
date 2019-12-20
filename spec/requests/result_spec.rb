@@ -42,8 +42,10 @@ RSpec.describe "Result", type: :request do
         expect(response).to have_http_status(200)
 
         team_participation = Team.find(team.id).participations.first
-        expect(team_participation.result).to eq(4)
         expect(team_participation).to be_finished
+
+        member_representation = Representation.find_by(member: member)
+        expect(member_representation.result).to eq(4)
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
