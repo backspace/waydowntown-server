@@ -140,9 +140,6 @@ RSpec.describe "Games", type: :request do
   end
 
   describe "PATCH /games/:id/arrive" do
-    let(:another_team) { Team.create }
-    let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "converging") }
-
     before do
       team.participations.each{|p| p.invite && p.accept && p.converge! }
       other_team.participations.first.invite!
@@ -158,13 +155,15 @@ RSpec.describe "Games", type: :request do
 
       expect(Participation.find_by(team: team)).to be_arrived
       expect(Participation.find_by(team: other_team)).to be_converging
-      expect(Participation.find_by(team: another_team)).to be_converging
 
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
     end
 
-    context "when all other participations have arrived" do
+    context "when all other participations have arrived but another team has multiple members" do
+      let(:another_team) { Team.create }
+      let!(:another_participation) { Participation.create(team: another_team, game: game, aasm_state: "converging") }
+
       let!(:another_team_member_1) { Member.create(team: another_team) }
       let!(:another_team_member_2) { Member.create(team: another_team) }
 
@@ -184,12 +183,38 @@ RSpec.describe "Games", type: :request do
         [member, other_team_member, another_team_member_1, another_team_member_2].each_with_index do |m, i|
           representation = Representation.find_by(member: m)
           expect(representation).to be
-          expect(representation.representing).to be_nil
+
+          if m.team == another_team
+            expect(representation.representing).to be_nil
+          else
+            expect(representation.representing).to be true
+          end
+
           expect(representation.participation.team).to eq(m.team)
         end
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
+      end
+    end
+
+    context "when all other participations have arrived and all teams are solo" do
+      before do
+        other_team.participations.first.arrive!
+      end
+
+      it "moves participations to scheduled and notifies other teams" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/arrive", headers: headers
+        expect(response).to have_http_status(200)
+
+        expect(Participation.all).to all(be_scheduled)
+
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+        expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
+
+        # FIXME removed assertions re start/end time but…
       end
     end
 

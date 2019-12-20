@@ -28,7 +28,10 @@ class Participation < ApplicationRecord
     end
 
     event :represent do
-      transitions from: :arrived, to: :representing, after: Proc.new { team.members.each {|member| representations.create(member: member) } }
+      transitions from: :arrived, to: :representing, after: Proc.new {
+        team_count = team.members.count
+        team.members.each {|member| representations.create(member: member, representing: team_count > 1 ? nil : true) }
+      }
     end
 
     event :schedule do
