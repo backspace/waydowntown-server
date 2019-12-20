@@ -106,7 +106,7 @@ RSpec.describe "Games", type: :request do
         other_team.participations.first.accept!
       end
 
-      it "moves participations to converging and notifies other teams" do
+      it "moves participations to converging and channels teams" do
         patch "/games/#{game.id}/accept", headers: headers
         expect(response).to have_http_status(200)
 
@@ -139,7 +139,7 @@ RSpec.describe "Games", type: :request do
       other_team.participations.first.converge!
     end
 
-    it "meets and notifies other participants" do
+    it "meets and channels teams" do
       patch "/games/#{game.id}/arrive", headers: headers
       expect(response).to have_http_status(200)
 
@@ -167,7 +167,7 @@ RSpec.describe "Games", type: :request do
         travel_back
       end
 
-      it "moves participations to representing, creates representations, notifies other teams, and queues a job to end representing" do
+      it "moves participations to representing, creates representations, channels teams, and queues a job to end representing" do
         patch "/games/#{game.id}/arrive", headers: headers
         expect(response).to have_http_status(200)
 
@@ -199,7 +199,7 @@ RSpec.describe "Games", type: :request do
         other_team.participations.first.arrive!
       end
 
-      it "moves participations to scheduled and notifies other teams" do
+      it "moves participations to scheduled and channels teams" do
         patch "/games/#{game.id}/arrive", headers: headers
         expect(response).to have_http_status(200)
 
@@ -241,7 +241,7 @@ RSpec.describe "Games", type: :request do
       another_participation.represent!
     end
 
-    it "updates the representation, does not change the participation state, and notifies other participants" do
+    it "updates the representation, does not change the participation state, and channels teams" do
       patch "/games/#{game.id}/represent", params: '{"representing": true}', headers: headers
       expect(response).to have_http_status(200)
 
@@ -269,7 +269,7 @@ RSpec.describe "Games", type: :request do
         travel_back
       end
 
-      it "moves participations to scheduled and notifies other teams" do
+      it "moves participations to scheduled and channels teams" do
         patch "/games/#{game.id}/represent", params: '{"representing": false}', headers: headers
         expect(response).to have_http_status(200)
 
@@ -306,7 +306,7 @@ RSpec.describe "Games", type: :request do
       team.participations.each{|p| p.invite! }
     end
 
-    it "cancels a game and notifies participations" do
+    it "cancels a game and channels teams" do
       patch "/games/#{game.id}/cancel", headers: headers
       expect(response).to have_http_status(200)
 
@@ -327,7 +327,7 @@ RSpec.describe "Games", type: :request do
       team.participations.update(aasm_state: "cancelled")
     end
 
-    it "dismisses a game and sends no notifications" do
+    it "dismisses a game and does not channel" do
       patch "/games/#{game.id}/dismiss", headers: headers
       expect(response).to have_http_status(200)
 
@@ -358,7 +358,7 @@ RSpec.describe "Games", type: :request do
       team.participations.update(aasm_state: "finished")
     end
 
-    it "archives a game and sends no notifications" do
+    it "archives a game and does not channel" do
       patch "/games/#{game.id}/archive", headers: headers
       expect(response).to have_http_status(200)
 
