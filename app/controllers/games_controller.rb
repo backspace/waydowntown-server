@@ -1,9 +1,15 @@
 class GamesController < ApplicationController
   def index
-    games = current_team.games.reject do |game|
+    not_dismissed_games =
+      Game.left_outer_joins(participations: :representations)
+        .where(participations: {team: current_team})
+        .where.not(participations: {aasm_state: 'dismissed'})
+
+    # FIXME this didn’t quite work but something like it is probably possible
+    games = not_dismissed_games.reject do |game|
       participation = game.participations.find_by(team: current_team)
       representation = participation.representations.find_by(member: current_member)
-      participation.dismissed? || (representation && representation.archived?)
+      representation && representation.archived?
     end
 
     render json: game_json(games)
