@@ -116,7 +116,9 @@ class GamesController < ApplicationController
     team_participation.finish
     team_participation.save
 
-    member_representation.result = params[:result]
+    permitted = params.permit([ "value" ])
+
+    member_representation.result = permitted
     member_representation.save
 
     json = game_json(game)

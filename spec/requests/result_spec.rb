@@ -24,7 +24,7 @@ RSpec.describe "Result", type: :request do
     it "returns a 403" do
       stub_const('TeamChannel', team_channel_spy)
 
-      patch "/games/#{game.id}/report", params: '{"result": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+      patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
       expect(response).to have_http_status(403)
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
@@ -38,14 +38,14 @@ RSpec.describe "Result", type: :request do
       it "stores the result and transitions the participation to finished" do
         stub_const('TeamChannel', team_channel_spy)
 
-        patch "/games/#{game.id}/report", params: '{"result": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(200)
 
         team_participation = Team.find(team.id).participations.first
         expect(team_participation).to be_finished
 
         member_representation = Representation.find_by(member: member)
-        expect(member_representation.result).to eq(4)
+        expect(member_representation.result).to eq({ "value" => 4 })
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
@@ -60,7 +60,7 @@ RSpec.describe "Result", type: :request do
       it "returns a 409" do
         stub_const('TeamChannel', team_channel_spy)
 
-        patch "/games/#{game.id}/report", params: '{"result": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(409)
 
         expect(team_channel_spy).not_to have_received(:broadcast_to)
