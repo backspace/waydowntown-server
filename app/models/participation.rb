@@ -8,7 +8,7 @@ class Participation < ApplicationRecord
 
   aasm do
     state :unsent, initial: true
-    state :invited, :accepted, :converging, :arrived, :representing, :scheduled, :finished
+    state :invited, :accepted, :converging, :arrived, :representing, :scheduled, :scoring, :finished
     state :cancelled, :dismissed
 
     event :invite do
@@ -38,8 +38,12 @@ class Participation < ApplicationRecord
       transitions from: :representing, to: :scheduled, guard: :all_representations_determined?
     end
 
+    event :score do
+      transitions from: :scheduled, to: :scoring
+    end
+
     event :finish do
-      transitions from: :scheduled, to: :finished
+      transitions from: :scoring, to: :finished
     end
 
     event :cancel do

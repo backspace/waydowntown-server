@@ -36,14 +36,14 @@ RSpec.describe "Result", type: :request do
         member.representations.update(representing: true)
       end
 
-      it "stores the result and transitions the participation to finished but does not queue the scorer" do
+      it "stores the result and transitions the participation to scoring but does not queue the scorer" do
         stub_const('TeamChannel', team_channel_spy)
 
         patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(200)
 
         team_participation = Team.find(team.id).participations.first
-        expect(team_participation).to be_finished
+        expect(team_participation).to be_scoring
 
         member_representation = Representation.find_by(member: member)
         expect(member_representation.result).to eq({ "value" => 4 })
@@ -54,9 +54,9 @@ RSpec.describe "Result", type: :request do
         expect(ScorerJob).not_to have_been_enqueued.with(game)
       end
 
-      context "and the other participation is finished" do
+      context "and the other participation is scoring" do
         before do
-          other_team.participations.update(aasm_state: "finished")
+          other_team.participations.update(aasm_state: "scoring")
         end
 
         it "queues the scorer" do
@@ -92,14 +92,14 @@ RSpec.describe "Result", type: :request do
           other_member.representations.update(result: {value: 5})
         end
 
-        it "stores the result and transitions the participation to finished" do
+        it "stores the result and transitions the participation to scoring" do
           stub_const('TeamChannel', team_channel_spy)
 
           patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
           expect(response).to have_http_status(200)
 
           team_participation = Team.find(team.id).participations.first
-          expect(team_participation).to be_finished
+          expect(team_participation).to be_scoring
 
           member_representation = Representation.find_by(member: member)
           expect(member_representation.result).to eq({ "value" => 4 })

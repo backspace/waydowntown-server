@@ -107,7 +107,7 @@ class GamesController < ApplicationController
   def report
     game = Game.find(params[:id])
 
-    render_conflict and return unless team_participation.may_finish?
+    render_conflict and return unless team_participation.may_score?
 
     member_representation = team_participation.representations.find_by(member: current_member)
 
@@ -121,7 +121,7 @@ class GamesController < ApplicationController
     team_participation_complete = team_participation.representations.all? {|r| !r.representing || r.result.present? }
 
     if team_participation_complete
-      team_participation.finish
+      team_participation.score
       team_participation.save
     end
 
@@ -131,7 +131,7 @@ class GamesController < ApplicationController
       broadcast_to_teams(game, json)
     end
 
-    if game.participations.all?(&:finished?)
+    if game.participations.all?(&:scoring?)
       ScorerJob.perform_later(game)
     end
 
