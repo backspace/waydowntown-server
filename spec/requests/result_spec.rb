@@ -36,7 +36,7 @@ RSpec.describe "Result", type: :request do
         member.representations.update(representing: true)
       end
 
-      it "stores the result and transitions the participation to finished" do
+      it "stores the result and transitions the participation to finished but does not queue the scorer" do
         stub_const('TeamChannel', team_channel_spy)
 
         patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
@@ -50,6 +50,20 @@ RSpec.describe "Result", type: :request do
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
+
+        expect(ScorerJob).not_to have_been_enqueued.with(game)
+      end
+
+      context "and the other participation is finished" do
+        before do
+          other_team.participations.update(aasm_state: "finished")
+        end
+
+        it "queues the scorer" do
+          stub_const('TeamChannel', team_channel_spy)
+          patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+          expect(ScorerJob).to have_been_enqueued.with(game)
+        end
       end
     end
 

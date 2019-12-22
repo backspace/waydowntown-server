@@ -131,6 +131,10 @@ class GamesController < ApplicationController
       broadcast_to_teams(game, json)
     end
 
+    if game.participations.all?(&:finished?)
+      ScorerJob.perform_later(game)
+    end
+
     render json: json
   end
 
