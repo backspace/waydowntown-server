@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe "Result", type: :request do
 
   let!(:member) { Member.create(name: 'me', team: team) }
+  let!(:other_member) { Member.create(team: team) }
   let(:team) { Team.create(name: 'us') }
   let!(:other_team) { Team.create(name: 'them') }
 
@@ -30,9 +31,9 @@ RSpec.describe "Result", type: :request do
       expect(team_channel_spy).not_to have_received(:broadcast_to)
     end
 
-    context "when the member is representing" do
+    context "and only the submitting member is representing" do
       before do
-        Representation.update(representing: true)
+        member.representations.update(representing: true)
       end
 
       it "stores the result and transitions the participation to finished" do
@@ -49,6 +50,49 @@ RSpec.describe "Result", type: :request do
 
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
         expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
+      end
+    end
+
+    context "when both members are representing" do
+      before do
+        Representation.update(representing: true)
+      end
+
+      it "stores the result but does not change the participation state" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        expect(response).to have_http_status(200)
+
+        team_participation = Team.find(team.id).participations.first
+        expect(team_participation).to be_scheduled
+
+        member_representation = Representation.find_by(member: member)
+        expect(member_representation.result).to eq({ "value" => 4 })
+
+        expect(team_channel_spy).not_to have_received(:broadcast_to)
+      end
+
+      context "and the other member has reported a result" do
+        before do
+          other_member.representations.update(result: {value: 5})
+        end
+
+        it "stores the result and transitions the participation to finished" do
+          stub_const('TeamChannel', team_channel_spy)
+
+          patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+          expect(response).to have_http_status(200)
+
+          team_participation = Team.find(team.id).participations.first
+          expect(team_participation).to be_finished
+
+          member_representation = Representation.find_by(member: member)
+          expect(member_representation.result).to eq({ "value" => 4 })
+
+          expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
+          expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
+        end
       end
     end
 
