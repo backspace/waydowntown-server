@@ -95,6 +95,8 @@ GEM
       multipart-post (>= 1.2, < 3)
     fast_jsonapi (1.5)
       activesupport (>= 4.2)
+    fcm (0.0.6)
+      httparty (~> 0.10, >= 0.10.0)
     ffi (1.11.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -105,6 +107,9 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
+    httparty (0.17.3)
+      mime-types (~> 3.0)
+      multi_xml (>= 0.5.2)
     i18n (1.7.0)
       concurrent-ruby (~> 1.0)
     jbuilder (2.9.1)
@@ -133,6 +138,7 @@ GEM
     mini_portile2 (2.4.0)
     minitest (5.13.0)
     msgpack (1.3.1)
+    multi_xml (0.6.0)
     multipart-post (2.1.1)
     netrc (0.11.0)
     nio4r (2.5.2)
@@ -280,6 +286,7 @@ DEPENDENCIES
   byebug
   capybara (>= 2.15)
   fast_jsonapi
+  fcm
   houston
   jbuilder (~> 2.7)
   jsonapi_expectations

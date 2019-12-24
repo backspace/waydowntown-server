@@ -58,6 +58,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'aasm'
 gem 'activerecord-postgis-adapter'
 gem 'fast_jsonapi'
+gem 'fcm'
 gem 'houston'
 gem 'rack-cors'
 gem 'sentry-raven'
