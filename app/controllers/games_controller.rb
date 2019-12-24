@@ -113,7 +113,7 @@ class GamesController < ApplicationController
 
     render json: {errors: [{status: "403"}]}, status: :forbidden and return unless member_representation && member_representation.representing?
 
-    permitted = params.permit([ "value" ])
+    permitted = params.permit(:value, :values => [])
 
     member_representation.result = permitted
     member_representation.save

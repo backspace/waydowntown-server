@@ -83,6 +83,30 @@ RSpec.describe Scorer do
         expect(subject.winners).to contain_exactly( team1, team2 )
       end
     end
+
+    context "and the incarnation scores using most matches" do
+      let(:incarnation) { Incarnation.create(concept_id: "word-finder", goal: {"values" => ["A", "B", "C"] })}
+
+      context "and one team’s member has the most matches" do
+        before do
+          member1a_representation.update(result: { "values" => ["C", "B"] })
+          member2_representation.update(result: { "values" => ["A"] })
+          member3_representation.update(result: { "values" => ["X", "B"] })
+        end
+
+        it "declares that member’s team the winner" do
+          expect(subject.winners).to contain_exactly( team1 )
+        end
+
+        it "stores the score for each participation" do
+          subject
+
+          expect(team1_participation[:score]).to eq(2)
+          expect(team2_participation[:score]).to eq(1)
+          expect(team3_participation[:score]).to eq(1)
+        end
+      end
+    end
   end
 
   context "when a team has more than one representing member" do

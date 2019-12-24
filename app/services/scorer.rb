@@ -22,8 +22,15 @@ class Scorer
   end
 
   protected def calculate_representation_score(representation)
-    representation.result && representation.result["value"] ?
-      representation.result["value"] : 0
+    if @game.incarnation.concept.scoring == "highest_value"
+      representation.result && representation.result["value"] ?
+        representation.result["value"] : 0
+    elsif @game.incarnation.concept.scoring == "most_matches"
+      goal = @game.incarnation.goal["values"]
+      found = representation.result && representation.result["values"] ? representation.result["values"] : []
+
+      (goal & found).length
+    end
   end
 
   protected def calculate_participation_score(participation)

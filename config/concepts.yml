@@ -1,11 +1,18 @@
 "bluetooth-collector":
   name: Bluetooth Collector
   duration: 15
+  scoring: highest_value
 tap:
   name: Tap
   duration: 10
+  scoring: highest_value
 "word-collector":
   name: Word Collector
   duration: 20
+  scoring: highest_value
+"word-finder":
+  name: Word Finder
+  duration: 20
+  scoring: most_matches
 unplayed:
   name: Unplayed test game

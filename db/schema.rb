@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_22_171928) do
+ActiveRecord::Schema.define(version: 2019_12_24_233652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2019_12_22_171928) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "duration"
     t.bigint "location_id"
+    t.jsonb "goal"
     t.index ["location_id"], name: "index_incarnations_on_location_id"
   end
 

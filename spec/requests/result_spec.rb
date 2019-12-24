@@ -54,6 +54,16 @@ RSpec.describe "Result", type: :request do
         expect(ScorerJob).not_to have_been_enqueued.with(game)
       end
 
+      it "can store multiple values" do
+        stub_const('TeamChannel', team_channel_spy)
+
+        patch "/games/#{game.id}/report", params: '{"values": [4, 5]}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+        expect(response).to have_http_status(200)
+
+        member_representation = Representation.find_by(member: member)
+        expect(member_representation.result).to eq({ "values" => [4, 5] })
+      end
+
       context "and the other participation is scoring" do
         before do
           other_team.participations.update(aasm_state: "scoring")
