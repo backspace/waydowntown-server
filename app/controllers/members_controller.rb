@@ -9,7 +9,7 @@ PERMITTED_CAPABILITIES = [
   "speed",
   "stairs",
 
-  "fastTapping",
+  "fastNavigation",
 ]
 
 PERMITTED_DEVICE = [

@@ -58,7 +58,7 @@ RSpec.describe "Result", type: :request do
             speed: true,
             stairs: false,
 
-            fastTapping: true,
+            fastNavigation: true,
           },
           device: {
             cordova: "a",
@@ -90,7 +90,7 @@ RSpec.describe "Result", type: :request do
       "speed" => true,
       "stairs" => false,
 
-      "fastTapping" => true,
+      "fastNavigation" => true,
     })
 
     expect(member.device).to eql({
