@@ -4,4 +4,8 @@ class GameSerializer
   belongs_to :incarnation
   has_many :participations
   attributes :representing_ends_at, :begins_at, :ends_at
+
+  attribute :duration do |object|
+    object.incarnation.duration || object.incarnation.concept.duration
+  end
 end
