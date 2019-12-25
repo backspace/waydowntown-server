@@ -37,85 +37,85 @@ RSpec.describe "Result", type: :request do
 
       expect(InviteMemberToNearbyIncarnationJob).to have_been_enqueued.with(member)
     end
-  end
 
-  it "stores capabilities and device" do
-    beginning = Time.now
+    it "stores capabilities and device" do
+      beginning = Time.now
 
-    json = {
-      data: {
-        id: member.id,
-        type: "member",
-        attributes: {
-          capabilities: {
-            bluetooth: false,
-            camera: true,
-            decibels: false,
-            location: true,
-            ocr: true,
+      json = {
+        data: {
+          id: member.id,
+          type: "member",
+          attributes: {
+            capabilities: {
+              bluetooth: false,
+              camera: true,
+              decibels: false,
+              location: true,
+              ocr: true,
 
-            exertion: true,
-            speed: true,
-            stairs: false,
+              exertion: true,
+              speed: true,
+              stairs: false,
 
-            fastNavigation: true,
-          },
-          device: {
-            cordova: "a",
-            model: "b",
-            platform: "c",
-            uuid: "d",
-            version: "e",
-            manufacturer: "f",
-            isVirtual: "g",
-            serial: "h"
+              fastNavigation: true,
+            },
+            device: {
+              cordova: "a",
+              model: "b",
+              platform: "c",
+              uuid: "d",
+              version: "e",
+              manufacturer: "f",
+              isVirtual: "g",
+              serial: "h"
+            }
           }
         }
-      }
-    }.to_json
+      }.to_json
 
-    patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
-    expect(response).to have_http_status(200)
+      patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+      expect(response).to have_http_status(200)
 
-    member.reload
+      member.reload
 
-    expect(member.capabilities).to eql({
-      "bluetooth" => false,
-      "camera" => true,
-      "decibels" => false,
-      "location" => true,
-      "ocr" => true,
+      expect(member.capabilities).to eql({
+        "bluetooth" => false,
+        "camera" => true,
+        "decibels" => false,
+        "location" => true,
+        "ocr" => true,
 
-      "exertion" => true,
-      "speed" => true,
-      "stairs" => false,
+        "exertion" => true,
+        "speed" => true,
+        "stairs" => false,
 
-      "fastNavigation" => true,
-    })
+        "fastNavigation" => true,
+      })
 
-    expect(member.device).to eql({
-      "cordova" => "a",
-      "model" => "b",
-      "platform" => "c",
-      "uuid" => "d",
-      "version" => "e",
-      "manufacturer" => "f",
-      "isVirtual" => "g",
-      "serial" => "h"
-    })
-  end
+      expect(member.device).to eql({
+        "cordova" => "a",
+        "model" => "b",
+        "platform" => "c",
+        "uuid" => "d",
+        "version" => "e",
+        "manufacturer" => "f",
+        "isVirtual" => "g",
+        "serial" => "h"
+      })
+    end
 
-  it "ignores an update with no attributes" do
-    beginning = Time.now
+    it "ignores an update with no attributes" do
+      beginning = Time.now
 
-    json = {
-      data: {
-        id: member.id,
-        type: "member"
-      }
-    }.to_json
+      json = {
+        data: {
+          id: member.id,
+          type: "member"
+        }
+      }.to_json
 
-    patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
-    expect(response).to have_http_status(200)
-  end
+      patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+      expect(response).to have_http_status(200)
+    end
+    end
 end
