@@ -14,6 +14,8 @@ RSpec.describe "Result", type: :request do
 
   describe "PATCH /games/:id/report" do
     before do
+      stub_const('TeamChannel', team_channel_spy)
+
       Participation.update_all(aasm_state: 'scheduled')
       Participation.all.each do |participation|
         participation.team.members.each do |member|
@@ -23,8 +25,6 @@ RSpec.describe "Result", type: :request do
     end
 
     it "returns a 403" do
-      stub_const('TeamChannel', team_channel_spy)
-
       patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
       expect(response).to have_http_status(403)
 
@@ -37,8 +37,6 @@ RSpec.describe "Result", type: :request do
       end
 
       it "stores the result and transitions the participation to scoring but does not queue the scorer" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(200)
 
@@ -55,8 +53,6 @@ RSpec.describe "Result", type: :request do
       end
 
       it "can store multiple values" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/report", params: '{"values": [4, 5]}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(200)
 
@@ -70,7 +66,6 @@ RSpec.describe "Result", type: :request do
         end
 
         it "queues the scorer" do
-          stub_const('TeamChannel', team_channel_spy)
           patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
           expect(ScorerJob).to have_been_enqueued.with(game)
         end
@@ -83,8 +78,6 @@ RSpec.describe "Result", type: :request do
       end
 
       it "stores the result but does not change the participation state" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(200)
 
@@ -103,8 +96,6 @@ RSpec.describe "Result", type: :request do
         end
 
         it "stores the result and transitions the participation to scoring" do
-          stub_const('TeamChannel', team_channel_spy)
-
           patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
           expect(response).to have_http_status(200)
 
@@ -126,8 +117,6 @@ RSpec.describe "Result", type: :request do
       end
 
       it "returns a 409" do
-        stub_const('TeamChannel', team_channel_spy)
-
         patch "/games/#{game.id}/report", params: '{"value": 4}', headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
         expect(response).to have_http_status(409)
 
