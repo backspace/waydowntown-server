@@ -117,5 +117,5 @@ RSpec.describe "Result", type: :request do
       patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
       expect(response).to have_http_status(200)
     end
-    end
+  end
 end
