@@ -22,12 +22,10 @@ class EndRepresentingStage
 
     Scheduler.new(@game).schedule
 
-    json = GameSerializer.new(@game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
-
     @game.teams.each do |team|
       TeamChannel.broadcast_to(team, {
         type: 'changes',
-        content: json
+        content: @game.to_serializable_hash
       })
     end
   end

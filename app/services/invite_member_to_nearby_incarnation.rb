@@ -15,11 +15,10 @@ class InviteMemberToNearbyIncarnation
 
       game = Game.create(incarnation: incarnation, teams: [team])
       game.participations.each(&:invite!)
-      json = GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
 
       TeamChannel.broadcast_to(team, {
         type: 'changes',
-        content: json
+        content: game.to_serializable_hash
       })
     end
   end

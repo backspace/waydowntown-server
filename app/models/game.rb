@@ -7,4 +7,12 @@ class Game < ApplicationRecord
   def winners
     participations.where(winner: true).map(&:team)
   end
+
+  def to_serializable_hash
+    GameSerializer.new(self, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
+  end
+
+  def self.to_serializable_hash(games)
+    GameSerializer.new(games, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
+  end
 end

@@ -12,7 +12,7 @@ class GamesController < ApplicationController
       representation && representation.archived?
     end
 
-    render json: game_json(games)
+    render json: Game.to_serializable_hash(games)
   end
 
   def find
@@ -35,7 +35,7 @@ class GamesController < ApplicationController
 
     CreateProspectiveGame.new(team, game).call
 
-    json = game_json(game)
+    json = game.to_serializable_hash
 
     render json: json, status: :created
   end
@@ -56,7 +56,7 @@ class GamesController < ApplicationController
       game.participations.each(&:converge!)
     end
 
-    json = game_json(game)
+    json = game.to_serializable_hash
     broadcast_to_teams(game, json)
 
     render json: json
@@ -81,7 +81,7 @@ class GamesController < ApplicationController
       EndRepresentingStageJob.set(wait_until: game.representing_ends_at).perform_later(game)
     end
 
-    json = game_json(game)
+    json = game.to_serializable_hash
     broadcast_to_teams(game, json)
 
     render json: json
@@ -98,7 +98,7 @@ class GamesController < ApplicationController
       Scheduler.new(game).schedule
     end
 
-    json = game_json(game)
+    json = game.to_serializable_hash
     broadcast_to_teams(game, json)
 
     render json: json
@@ -125,7 +125,7 @@ class GamesController < ApplicationController
       team_participation.save
     end
 
-    json = game_json(game)
+    json = game.to_serializable_hash
 
     if team_participation_complete
       broadcast_to_teams(game, json)
@@ -143,7 +143,7 @@ class GamesController < ApplicationController
 
     game.participations.each(&:cancel!)
 
-    json = game_json(game)
+    json = game.to_serializable_hash
     broadcast_to_teams(game, json)
 
     render json: json
@@ -156,7 +156,7 @@ class GamesController < ApplicationController
 
     team_participation.dismiss!
 
-    render json: game_json(game)
+    render json: game.to_serializable_hash
   end
 
   def archive
@@ -166,11 +166,7 @@ class GamesController < ApplicationController
 
     team_participation.representations.find_by(member: current_member).update(archived: true)
 
-    render json: game_json(game)
-  end
-
-  protected def game_json(game)
-    GameSerializer.new(game, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
+    render json: game.to_serializable_hash
   end
 
   protected def broadcast_to_teams(game, json)
