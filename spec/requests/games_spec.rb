@@ -39,6 +39,14 @@ RSpec.describe "Games", type: :request do
       expect_record game, type: 'game'
       expect_item_count 1
     end
+
+    it "includes archived games when requested" do
+      get '/games', params: { archived: true }, headers: headers
+      expect(response).to have_http_status(200)
+
+      expect_record game, type: 'game'
+      expect_item_count 2
+    end
   end
 
   describe "POST /games" do
