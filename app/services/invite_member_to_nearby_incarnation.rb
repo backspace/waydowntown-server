@@ -11,7 +11,7 @@ class InviteMemberToNearbyIncarnation
       location = incarnation.location
 
       team = @member.team
-      Notifier.notify(team, "Are you near/in #{location.name}? Here’s an invitation")
+      Notifier.notify_team(team, "Are you near/in #{location.name}? Here’s an invitation")
 
       game = Game.create(incarnation: incarnation, teams: [team])
       game.participations.each(&:invite!)

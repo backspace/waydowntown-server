@@ -56,7 +56,7 @@ class GamesController < ApplicationController
     team_participation.accept!
     game.participations.where.not(team: team).select(&:may_invite?).each do |p|
       p.invite!
-      Notifier.notify(p.team, "#{team.name} invited you to a game")
+      Notifier.notify_team(p.team, "#{team.name} invited you to a game")
     end
 
     if game.participations.all?(&:may_converge?)

@@ -118,4 +118,17 @@ RSpec.describe "Result", type: :request do
       expect(response).to have_http_status(200)
     end
   end
+
+  describe "POST /members/:id/notify" do
+    let(:notifier_spy) { class_spy('Notifier')}
+
+    it "sends a notification to the member" do
+      stub_const('Notifier', notifier_spy)
+
+      post "/members/#{member.id}/notify",headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+      expect(response).to have_http_status(201)
+
+      expect(notifier_spy).to have_received(:notify_member).once.with(member, "A notification")
+    end
+  end
 end

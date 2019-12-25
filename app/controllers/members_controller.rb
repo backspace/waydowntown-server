@@ -51,4 +51,9 @@ class MembersController < ApplicationController
     member.update(new_attributes)
     render json: MemberSerializer.new(member).serializable_hash
   end
+
+  def notify
+    Notifier.notify_member(current_member, "A notification")
+    head :created
+  end
 end

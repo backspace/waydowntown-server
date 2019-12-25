@@ -24,7 +24,7 @@ RSpec.describe InviteMemberToNearbyIncarnation do
       subject
 
       expect(team_channel_spy).not_to have_received(:broadcast_to)
-      expect(notifier_spy).not_to have_received(:notify)
+      expect(notifier_spy).not_to have_received(:notify_team)
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe InviteMemberToNearbyIncarnation do
       expect(participation.game.incarnation).to eql(incarnation_one)
 
       expect(team_channel_spy).to have_received(:broadcast_to).with(team, anything)
-      expect(notifier_spy).to have_received(:notify).once.with(team, "Are you near/in Somewhere? Here’s an invitation")
+      expect(notifier_spy).to have_received(:notify_team).once.with(team, "Are you near/in Somewhere? Here’s an invitation")
     end
   end
 end

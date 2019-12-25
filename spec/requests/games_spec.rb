@@ -103,9 +103,9 @@ RSpec.describe "Games", type: :request do
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(other_team, anything)
       expect(team_channel_spy).to have_received(:broadcast_to).once.with(team, anything)
 
-      expect(notifier_spy).to have_received(:notify).once.with(other_team, "#{team.name} invited you to a game")
-      expect(notifier_spy).not_to have_received(:notify).with(another_team, anything)
-      expect(notifier_spy).not_to have_received(:notify).with(team, anything)
+      expect(notifier_spy).to have_received(:notify_team).once.with(other_team, "#{team.name} invited you to a game")
+      expect(notifier_spy).not_to have_received(:notify_team).with(another_team, anything)
+      expect(notifier_spy).not_to have_received(:notify_team).with(team, anything)
     end
 
     context "when all other participations have been accepted" do
