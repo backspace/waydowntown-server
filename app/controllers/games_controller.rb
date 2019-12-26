@@ -1,22 +1,20 @@
 class GamesController < ApplicationController
   def index
-    include_archived = params[:archived] == "true"
+    return_archived = params[:archived] == "true"
 
     not_dismissed_games =
       Game.left_outer_joins(participations: :representations)
         .where(participations: {team: current_team})
         .where.not(participations: {aasm_state: 'dismissed'})
 
-    if include_archived
-      games = not_dismissed_games
-    else
-      # FIXME this didn’t quite work but something like it is probably possible
-      games = not_dismissed_games.reject do |game|
-        participation = game.participations.find_by(team: current_team)
-        representation = participation.representations.find_by(member: current_member)
+    filter_method = return_archived ? :select : :reject
 
-        representation && representation.archived?
-      end
+    # FIXME this didn’t quite work but something like it is probably possible
+    games = not_dismissed_games.send(filter_method) do |game|
+      participation = game.participations.find_by(team: current_team)
+      representation = participation.representations.find_by(member: current_member)
+
+      representation && representation.archived?
     end
 
     render json: Game.to_serializable_hash(games)
