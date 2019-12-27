@@ -35,6 +35,8 @@ RSpec.describe "Result", type: :request do
 
       expect(member.last_located).to be > beginning
 
+      expect_attributes lat: "49.897561", lon: "-97.140272"
+
       expect(InviteMemberToNearbyIncarnationJob).to have_been_enqueued.with(member)
     end
 

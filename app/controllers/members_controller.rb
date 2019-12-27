@@ -37,7 +37,7 @@ class MembersController < ApplicationController
         device: PERMITTED_DEVICE
       ] })
 
-    render json: MemberSerializer.new(member).serializable_hash and return unless permitted["data"]["attributes"]
+    render json: MemberSerializer.new(member, params: { current_member: current_member }).serializable_hash and return unless permitted["data"]["attributes"]
 
     new_attributes = permitted["data"]["attributes"].to_hash.each_with_object({}) do |(key, value), obj|
       obj[key.underscore] = value
@@ -49,7 +49,7 @@ class MembersController < ApplicationController
     end
 
     member.update(new_attributes)
-    render json: MemberSerializer.new(member).serializable_hash
+    render json: MemberSerializer.new(member, params: { current_member: current_member }).serializable_hash
   end
 
   def notify
