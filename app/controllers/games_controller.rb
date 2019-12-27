@@ -6,6 +6,7 @@ class GamesController < ApplicationController
       Game.left_outer_joins(participations: :representations)
         .where(participations: {team: current_team})
         .where.not(participations: {aasm_state: 'dismissed'})
+        .distinct
 
     filter_method = return_archived ? :select : :reject
 
