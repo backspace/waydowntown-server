@@ -13,7 +13,7 @@ RSpec.describe "Teams", type: :request do
       expect(response).to have_http_status(401)
     end
 
-    it "fails without a token" do
+    it "responds with a token" do
       get '/teams', headers: { "Authorization" => "Bearer #{member.token}" }
       expect(response).to have_http_status(200)
 
