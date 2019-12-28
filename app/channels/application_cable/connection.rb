@@ -7,7 +7,7 @@ module ApplicationCable
     end
 
     protected def find_verified_member
-      member = Member.find_by(id: request.params[:token])
+      member = Member.find_by(token: request.params[:token])
 
       reject_unauthorized_connection unless member
       member

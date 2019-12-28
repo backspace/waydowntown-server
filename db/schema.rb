@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_27_040539) do
+ActiveRecord::Schema.define(version: 2019_12_27_233010) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,6 +61,7 @@ ActiveRecord::Schema.define(version: 2019_12_27_040539) do
     t.jsonb "capabilities", default: {}
     t.jsonb "device", default: {}
     t.boolean "admin"
+    t.string "token"
     t.index ["team_id"], name: "index_members_on_team_id"
   end
 

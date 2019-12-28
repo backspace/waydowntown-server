@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   before_action :set_raven_context
 
   private def authenticate_member!
-    member = Member.find_by(id: bearer_token)
+    member = Member.find_by(token: bearer_token)
 
     render json: {errors: [{status: "401"}]}, status: :unauthorized unless member
     member
