@@ -1,3 +1,6 @@
+"barcode-finder":
+  name: Barcode Finder
+  scoring: most_matches
 "bluetooth-collector":
   name: Bluetooth Collector
   duration: 15
