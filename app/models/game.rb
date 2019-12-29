@@ -8,6 +8,22 @@ class Game < ApplicationRecord
     participations.where(winner: true).map(&:team)
   end
 
+  def directions
+    if incarnation.location
+      location = incarnation.location
+      location_directions = []
+
+      while location
+        location_directions << (location.name || location.description)
+        location = location.parent
+      end
+
+      location_directions.reverse.join(". ") + "."
+    else
+      "FIXME"
+    end
+  end
+
   def to_serializable_hash
     GameSerializer.new(self, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
   end
