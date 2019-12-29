@@ -24,6 +24,10 @@ class Game < ApplicationRecord
     end
   end
 
+  def instructions
+    incarnation.instructions
+  end
+
   def to_serializable_hash
     GameSerializer.new(self, include: [:incarnation, :'incarnation.concept', :participations, :'participations.team', :'participations.team.members', :'participations.representations']).serializable_hash
   end

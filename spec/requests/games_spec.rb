@@ -10,7 +10,7 @@ RSpec.describe "Games", type: :request do
   let(:other_team) { Team.create(name: 'them') }
 
   let!(:game) { Game.create(incarnation: incarnation, teams: [team, other_team]) }
-  let(:incarnation) { Incarnation.create(concept_id: "tap", location: landing) }
+  let(:incarnation) { Incarnation.create(concept_id: "tap", location: landing, instructions: "Tap tap tap") }
 
   let(:azone) { Location.create(name: "91 Albert") }
   let(:landing) { Location.create(description: "Meet on the second-floor landing", parent: azone) }
@@ -40,7 +40,7 @@ RSpec.describe "Games", type: :request do
       expect(response).to have_http_status(200)
 
       expect_record game, type: 'game'
-      expect_attributes directions: "91 Albert. Meet on the second-floor landing."
+      expect_attributes directions: "91 Albert. Meet on the second-floor landing.", instructions: "Tap tap tap"
       expect_item_count 1
     end
 
