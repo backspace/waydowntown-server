@@ -5,6 +5,10 @@
   name: Bluetooth Collector
   duration: 15
   scoring: highest_value
+"magnetometer-magnitude":
+  name: Magnetometer FIXME
+  duration: 30
+  scoring: highest_value
 "multiple-choice":
   name: Multiple Choice
   duration: 10
