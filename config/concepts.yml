@@ -5,6 +5,10 @@
   name: Bluetooth Collector
   duration: 15
   scoring: highest_value
+"multiple-choice":
+  name: Multiple Choice
+  duration: 10
+  scoring: most_matches
 tap:
   name: Tap
   duration: 10
