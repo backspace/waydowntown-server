@@ -23,6 +23,8 @@ module Waydowntown
         resource '*', :headers => :any, :methods => [:get, :post, :patch, :delete, :options]
       end
     end
+
+    config.timing = config_for(:timing)
   end
 end
 

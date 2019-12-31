@@ -1,0 +1,14 @@
+default: &default
+  representing: 30
+  scheduling: 30
+
+development:
+  <<: *default
+  representing: 10
+  scheduling: 10
+
+test:
+  <<: *default
+
+production:
+  <<: *default

@@ -82,7 +82,7 @@ class GamesController < ApplicationController
     if game.participations.all?(&:may_schedule?)
       Scheduler.new(game).schedule
     else
-      game.representing_ends_at = Time.current + 30.seconds
+      game.representing_ends_at = Time.current + Rails.configuration.timing['representing']
       game.save
       EndRepresentingStageJob.set(wait_until: game.representing_ends_at).perform_later(game)
     end

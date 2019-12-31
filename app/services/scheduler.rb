@@ -7,7 +7,7 @@ class Scheduler
     @game.participations.each(&:schedule!)
 
     current = Time.current
-    delay = 30.seconds
+    delay = Rails.configuration.timing['scheduling']
 
     duration = @game.incarnation.duration || @game.incarnation.concept.duration
 
