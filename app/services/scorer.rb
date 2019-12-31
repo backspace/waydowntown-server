@@ -27,7 +27,14 @@ class Scorer
       goal = @game.incarnation.goal["values"]
       found = representation.result && representation.result["values"] ? representation.result["values"] : []
 
-      (goal & found).length
+      matches = (goal & found)
+
+      if representation.result
+        representation.result["matches"] = matches
+        representation.save
+      end
+
+      matches.length
     end
   end
 

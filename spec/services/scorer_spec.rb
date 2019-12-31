@@ -105,6 +105,14 @@ RSpec.describe Scorer do
           expect(team2_participation[:score]).to eq(1)
           expect(team3_participation[:score]).to eq(1)
         end
+
+        it "stores the matches for each participation" do
+          subject
+
+          expect(member1a_representation.result["matches"]).to contain_exactly("C", "B")
+          expect(member2_representation.result["matches"]).to contain_exactly("A")
+          expect(member3_representation.result["matches"]).to contain_exactly("B")
+        end
       end
     end
   end
