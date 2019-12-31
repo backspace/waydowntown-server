@@ -15,6 +15,8 @@ RSpec.describe Team, type: :model do
 
   it "knows whether it can play an incarnation" do
     expect(team.can_play?(Incarnation.new(concept_id: "multiple-choice"))).to be true
+    expect(team.can_play?(Incarnation.new(concept_id: "multiple-choice", capabilities: ["camera"]))).to be false
+
     expect(team.can_play?(Incarnation.new(concept_id: "bluetooth-collector"))).to be false
   end
 end

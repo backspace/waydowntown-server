@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_31_174859) do
+ActiveRecord::Schema.define(version: 2019_12_31_194354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 2019_12_31_174859) do
     t.text "instructions"
     t.jsonb "questions"
     t.text "credit"
+    t.string "capabilities", default: [], array: true
     t.index ["location_id"], name: "index_incarnations_on_location_id"
   end
 

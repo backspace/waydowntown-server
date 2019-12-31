@@ -19,10 +19,12 @@ RSpec.describe FindGames do
 
     let!(:unplayed_incarnation) { Incarnation.create(concept_id: "bluetooth-collector") }
 
-    let!(:missing_capabilities_incarnation) { Incarnation.create(concept_id: "magnetometer-magnitude") }
+    let!(:missing_concept_capabilities_incarnation) { Incarnation.create(concept_id: "magnetometer-magnitude") }
+    let!(:missing_capabilities_incarnation) { Incarnation.create(concept_id: "multiple-choice", capabilities: ["magnetometer"]) }
 
     it 'returns possible games with possible concept overlap' do
       expect(subject).not_to include( have_attributes(incarnation: played_incarnation) )
+      expect(subject).not_to include( have_attributes(incarnation: missing_concept_capabilities_incarnation) )
       expect(subject).not_to include( have_attributes(incarnation: missing_capabilities_incarnation) )
 
       expect(subject).to include( have_attributes(incarnation: unplayed_incarnation, teams: [requesting_team, played_team] ) )
