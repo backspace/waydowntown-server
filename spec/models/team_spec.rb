@@ -17,6 +17,12 @@ RSpec.describe Team, type: :model do
     expect(team.can_play?(Incarnation.new(concept_id: "multiple-choice"))).to be true
     expect(team.can_play?(Incarnation.new(concept_id: "multiple-choice", capabilities: ["camera"]))).to be false
 
+    building = Location.new()
+    upstairs = Location.new(parent: building, capabilities: ["stairs"])
+
+    expect(team.can_play?(Incarnation.new(concept_id: "multiple-choice", location: building))).to be true
+    expect(team.can_play?(Incarnation.new(concept_id: "multiple-choice", location: upstairs))).to be false
+
     expect(team.can_play?(Incarnation.new(concept_id: "bluetooth-collector"))).to be false
   end
 end

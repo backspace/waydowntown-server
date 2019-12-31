@@ -12,9 +12,14 @@ class Team < ApplicationRecord
   end
 
   def can_play?(incarnation)
-    incarnation_and_concept_capabilities = (incarnation.concept.capabilities + incarnation.capabilities).uniq
+    location = incarnation.location || Location.new
+    concept_incarnation_and_location_capabilities = (
+      incarnation.concept.capabilities +
+      incarnation.capabilities +
+      location.hierarchy_capabilities
+    ).uniq
 
-    return incarnation_and_concept_capabilities.all? do |capability|
+    return concept_incarnation_and_location_capabilities.all? do |capability|
       capabilities[capability]
     end
   end
