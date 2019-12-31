@@ -18,7 +18,10 @@ class Game < ApplicationRecord
         location = location.parent
       end
 
-      location_directions.reverse.join(". ") + "."
+      joined = location_directions.reverse.join(". ")
+      joined += "." unless joined.ends_with? "."
+
+      joined
     else
       "FIXME"
     end
