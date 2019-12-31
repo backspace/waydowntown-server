@@ -52,6 +52,7 @@ RSpec.describe "Result", type: :request do
               bluetooth: false,
               camera: true,
               decibels: false,
+              devicemotion: false,
               location: true,
               ocr: true,
 
@@ -84,6 +85,7 @@ RSpec.describe "Result", type: :request do
         "bluetooth" => false,
         "camera" => true,
         "decibels" => false,
+        "devicemotion" => false,
         "location" => true,
         "ocr" => true,
 
