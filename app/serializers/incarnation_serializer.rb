@@ -3,5 +3,5 @@ class IncarnationSerializer
   set_type :incarnation
   belongs_to :concept
 
-  attributes :questions
+  attributes :questions, :credit
 end
