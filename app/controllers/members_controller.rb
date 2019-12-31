@@ -4,6 +4,7 @@ PERMITTED_CAPABILITIES = [
   "decibels",
   "devicemotion",
   "location",
+  "magnetometer",
   "ocr",
 
   "exertion",

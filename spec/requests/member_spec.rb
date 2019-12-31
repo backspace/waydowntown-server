@@ -54,6 +54,7 @@ RSpec.describe "Result", type: :request do
               decibels: false,
               devicemotion: false,
               location: true,
+              magnetometer: true,
               ocr: true,
 
               exertion: true,
@@ -87,6 +88,7 @@ RSpec.describe "Result", type: :request do
         "decibels" => false,
         "devicemotion" => false,
         "location" => true,
+        "magnetometer" => true,
         "ocr" => true,
 
         "exertion" => true,
