@@ -58,6 +58,8 @@ RSpec.describe "Result", type: :request do
               ocr: true,
 
               exertion: true,
+              height: false,
+              scents: false,
               speed: true,
               stairs: false,
 
@@ -92,6 +94,8 @@ RSpec.describe "Result", type: :request do
         "ocr" => true,
 
         "exertion" => true,
+        "height" => false,
+        "scents" => false,
         "speed" => true,
         "stairs" => false,
 

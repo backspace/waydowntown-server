@@ -8,6 +8,8 @@ PERMITTED_CAPABILITIES = [
   "ocr",
 
   "exertion",
+  "height",
+  "scents",
   "speed",
   "stairs",
 
