@@ -30,4 +30,25 @@ RSpec.describe Member, type: :model do
       "fastNavigation" => true,
     })).to be_valid
   end
+
+  it "rejects extraneous device fields" do
+    expect(Member.new(team: team, device: {"jorts" => "jants"})).to be_invalid
+  end
+
+  it "rejects non-string device fields" do
+    expect(Member.new(team: team, device: {"jorts" => 1312})).to be_invalid
+  end
+
+  it "accepts string device fields" do
+    expect(Member.new(team: team, device: {
+      "cordova" => "a",
+      "model" => "b",
+      "platform" => "c",
+      "uuid" => "d",
+      "version" => "e",
+      "manufacturer" => "f",
+      "isVirtual" => "g",
+      "serial" => "h"
+    })).to be_valid
+  end
 end

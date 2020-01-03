@@ -1,10 +1,12 @@
 class Member < ApplicationRecord
   CAPABILITIES_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'capabilities.json_schema').to_s
+  DEVICE_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'device.json_schema').to_s
 
   belongs_to :team
   has_many :representations
 
   validates :capabilities, json: { schema: CAPABILITIES_JSON_SCHEMA }
+  validates :device, json: { schema: DEVICE_JSON_SCHEMA }
 
   before_create :generate_token
 

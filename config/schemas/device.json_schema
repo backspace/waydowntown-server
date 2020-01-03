@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "properties": {
+    "cordova": { "type": "string" },
+    "model": { "type": "string" },
+    "platform": { "type": "string" },
+    "uuid": { "type": "string" },
+    "version": { "type": "string" },
+    "manufacturer": { "type": "string" },
+    "isVirtual": { "type": "string" },
+    "serial": { "type": "string" }
+  },
+  "additionalProperties": false
+}
