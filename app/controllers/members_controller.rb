@@ -53,7 +53,12 @@ class MembersController < ApplicationController
     end
 
     member.update(new_attributes)
-    render json: MemberSerializer.new(member, params: { current_member: current_member }).serializable_hash
+
+    if member.valid?
+      render json: MemberSerializer.new(member, params: { current_member: current_member }).serializable_hash
+    else
+      render json: {errors: [{status: "422"}]}, status: :unprocessable_entity
+    end
   end
 
   def notify

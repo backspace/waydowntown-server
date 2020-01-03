@@ -127,6 +127,27 @@ RSpec.describe "Result", type: :request do
       patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
       expect(response).to have_http_status(200)
     end
+
+    it "rejects invalid capabilities" do
+      json = {
+        data: {
+          id: member.id,
+          type: "member",
+          attributes: {
+            capabilities: {
+              bluetooth: "hello",
+            },
+          }
+        }
+      }.to_json
+
+      patch "/members/#{member.id}", params: json, headers: { "Authorization" => "Bearer #{member.token}", "Content-Type" => "application/vnd.api+json" }
+      expect(response).to have_http_status(422)
+
+      member.reload
+
+      expect(member.capabilities).to eql({})
+    end
   end
 
   describe "POST /members/:id/notify" do

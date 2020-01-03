@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "properties": {
+    "bluetooth": { "type": "boolean" },
+    "camera": { "type": "boolean" },
+    "decibels": { "type": "boolean" },
+    "devicemotion": { "type": "boolean" },
+    "location": { "type": "boolean" },
+    "magnetometer": { "type": "boolean" },
+    "ocr": { "type": "boolean" },
+
+    "exertion": { "type": "boolean" },
+    "height": { "type": "boolean" },
+    "scents": { "type": "boolean" },
+    "speed": { "type": "boolean" },
+    "stairs": { "type": "boolean" },
+
+    "fastNavigation": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}
