@@ -37,7 +37,7 @@ class GamesController < ApplicationController
         teams << Team.find(params[:team_id])
       end
 
-      game = Game.create(incarnation: incarnation, teams: teams)
+      game = Game.create!(incarnation: incarnation, teams: teams)
     else
       games = FindGames.new(current_team).call
       game = games.first
