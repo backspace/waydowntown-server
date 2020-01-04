@@ -25,14 +25,20 @@ class Incarnation < ApplicationRecord
   end
 
   def point
+    return RGeo::Geos.factory(srid: 4326).point(record_lon, record_lat) if record_lat.present? && record_lon.present?
+
     location = self.location
 
-    while location && !location.bounds
+    while location && !location.bounds && (!location.lat.present? || !location.lon.present?)
       location = location.parent
     end
 
-    if location && location.bounds
-      location.bounds.centroid
+    if location
+      if location.lat.present? && location.lon.present?
+        RGeo::Geos.factory(srid: 4326).point(location.lon, location.lat)
+      else
+        location.bounds.centroid
+      end
     else
       nil
     end
@@ -41,10 +47,18 @@ class Incarnation < ApplicationRecord
   memoize :point
 
   def lat
-    point.try(:y)
+    record_lat || point.try(:y)
   end
 
   def lon
-    point.try(:x)
+    record_lon || point.try(:x)
+  end
+
+  private def record_lat
+    read_attribute(:lat)
+  end
+
+  private def record_lon
+    read_attribute(:lon)
   end
 end

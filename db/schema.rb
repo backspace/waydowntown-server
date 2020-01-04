@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_31_195034) do
+ActiveRecord::Schema.define(version: 2020_01_04_060502) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,8 @@ ActiveRecord::Schema.define(version: 2019_12_31_195034) do
     t.jsonb "questions"
     t.text "credit"
     t.string "capabilities", default: [], array: true
+    t.decimal "lat"
+    t.decimal "lon"
     t.index ["location_id"], name: "index_incarnations_on_location_id"
   end
 
@@ -48,6 +50,8 @@ ActiveRecord::Schema.define(version: 2019_12_31_195034) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "capabilities", default: [], array: true
+    t.decimal "lat"
+    t.decimal "lon"
     t.index ["parent_id"], name: "index_locations_on_parent_id"
   end
 
