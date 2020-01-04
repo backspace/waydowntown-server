@@ -86,6 +86,15 @@ RSpec.describe "Games", type: :request do
       expect(game.incarnation.concept_id).to eq("tap")
       expect(game.teams).to eq([team])
     end
+
+    it "creates a solo game with requested incarnation" do
+      post '/games/request', params: { incarnation_id: incarnation.id, }, headers: { "Authorization" => "Bearer #{member.token}" }
+      expect(response).to have_http_status(201)
+
+      game = Game.last
+      expect(game.incarnation).to eq(incarnation)
+      expect(game.teams).to eq([team])
+    end
   end
 
   describe "PATCH /games/:id/accept" do

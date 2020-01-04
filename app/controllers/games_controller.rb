@@ -24,8 +24,12 @@ class GamesController < ApplicationController
   def find
     team = current_team
 
-    if params[:concept_id]
-      incarnation = Incarnation.find_by(concept_id: params[:concept_id])
+    if params[:concept_id] || params[:incarnation_id]
+      if params[:concept_id]
+        incarnation = Incarnation.find_by(concept_id: params[:concept_id])
+      else
+        incarnation = Incarnation.find(params[:incarnation_id])
+      end
 
       teams = [team]
 
