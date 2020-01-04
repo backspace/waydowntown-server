@@ -1,6 +1,8 @@
 CONCEPTS = YAML.load_file("#{Rails.root.to_s}/config/concepts.yml")
 
 class Incarnation < ApplicationRecord
+  extend Memoist
+
   belongs_to :location, optional: true
   has_many :games
 
@@ -20,5 +22,29 @@ class Incarnation < ApplicationRecord
 
   def concept=(concept)
     @concept = concept
+  end
+
+  def point
+    location = self.location
+
+    while location && !location.bounds
+      location = location.parent
+    end
+
+    if location && location.bounds
+      location.bounds.centroid
+    else
+      nil
+    end
+  end
+
+  memoize :point
+
+  def lat
+    point.try(:y)
+  end
+
+  def lon
+    point.try(:x)
   end
 end

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   patch 'games/:id/dismiss', to: 'games#dismiss'
 
   resources :games, only: [:index]
+  resources :incarnations, only: [:index]
 
   resources :members, only: [:update] do
     member do

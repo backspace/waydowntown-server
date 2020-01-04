@@ -61,6 +61,7 @@ gem 'activerecord-postgis-adapter'
 gem 'fast_jsonapi'
 gem 'fcm'
 gem 'houston'
+gem 'memoist'
 gem 'rack-cors'
 gem 'sentry-raven'
 
