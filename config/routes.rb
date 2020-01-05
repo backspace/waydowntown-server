@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  ActiveAdmin.routes(self)
+
   post 'auth', to: 'auth#find'
   post 'games/request', to: 'games#find'
   patch 'games/:id/accept', to: 'games#accept'
