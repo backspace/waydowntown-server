@@ -6,6 +6,15 @@ class Incarnation < ApplicationRecord
   belongs_to :location, optional: true
   has_many :games
 
+  def capabilities_raw
+    self.capabilities.join("\n") unless self.capabilities.nil?
+  end
+
+  def capabilities_raw=(values)
+    self.capabilities = []
+    self.capabilities = values.split("\n")
+  end
+
   def concept
     if @concept
       @concept

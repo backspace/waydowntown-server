@@ -3,6 +3,7 @@ GEM
   specs:
     aasm (5.0.6)
       concurrent-ruby (~> 1.0)
+    ace-rails-ap (4.2)
     actioncable (6.0.1)
       actionpack (= 6.0.1)
       nio4r (~> 2.0)
@@ -50,6 +51,9 @@ GEM
       ransack (~> 2.1, >= 2.1.1)
       sassc-rails (~> 2.1)
       sprockets (>= 3.0, < 4.1)
+    activeadmin_json_editor (0.0.9)
+      ace-rails-ap
+      railties (>= 3.0)
     activejob (6.0.1)
       activesupport (= 6.0.1)
       globalid (>= 0.3.6)
@@ -339,6 +343,7 @@ PLATFORMS
 DEPENDENCIES
   aasm
   activeadmin
+  activeadmin_json_editor
   activerecord-postgis-adapter
   activerecord_json_validator
   bootsnap (>= 1.4.2)
