@@ -19,7 +19,7 @@ class Incarnation < ApplicationRecord
     else
       if concept_id
         yml = Rails.configuration.concepts[concept_id]
-        Concept.new(id: concept_id, name: yml["name"], duration: yml["duration"], scoring: yml["scoring"], capabilities: yml["capabilities"] || [])
+        Concept.new(id: concept_id, name: yml[:name], duration: yml[:duration], scoring: yml[:scoring], capabilities: yml[:capabilities] || [])
       else
         Concept.new(id: "unknown", name: "Unknown concept", duration: 10, capabilities: [])
       end
