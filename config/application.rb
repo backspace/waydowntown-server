@@ -24,6 +24,7 @@ module Waydowntown
       end
     end
 
+    config.concepts = config_for(:concepts)
     config.timing = config_for(:timing)
   end
 end

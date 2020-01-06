@@ -5,6 +5,9 @@ ActiveAdmin.register Incarnation do
 
   form do |f|
     f.semantic_errors
+    f.inputs do
+      f.input :concept_id, as: :select, collection: Rails.configuration.concepts.keys
+    end
     f.inputs except: [:capabilities, :point]
     f.inputs do
       # Adapted from https://stackoverflow.com/a/27607475/760389

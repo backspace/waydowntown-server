@@ -1,5 +1,3 @@
-CONCEPTS = YAML.load_file("#{Rails.root.to_s}/config/concepts.yml")
-
 class Incarnation < ApplicationRecord
   extend Memoist
 
@@ -19,7 +17,7 @@ class Incarnation < ApplicationRecord
     if @concept
       @concept
     else
-      yml = CONCEPTS[concept_id]
+      yml = Rails.configuration.concepts[concept_id]
 
       if yml
         Concept.new(id: concept_id, name: yml["name"], duration: yml["duration"], scoring: yml["scoring"], capabilities: yml["capabilities"] || [])

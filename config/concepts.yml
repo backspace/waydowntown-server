@@ -1,45 +1,58 @@
-"barcode-finder":
-  name: Barcode Finder
-  scoring: most_matches
-  capabilities:
-    - barcode
-    - speed
-"bluetooth-collector":
-  name: Bluetooth Collector
-  duration: 15
-  scoring: highest_value
-  capabilities:
-    - bluetooth
-    - speed
-"magnetometer-magnitude":
-  name: Magnetometer FIXME
-  duration: 30
-  scoring: highest_value
-  capabilities:
-    - magnetometer
-"multiple-choice":
-  name: Multiple Choice
-  duration: 10
-  scoring: most_matches
-tap:
-  name: Tap
-  duration: 10
-  scoring: highest_value
-  capabilities:
-    - fastNavigation
-"word-collector":
-  name: Word Collector
-  duration: 20
-  scoring: highest_value
-  capabilities:
-    - fastNavigation
-    - speed
-"word-finder":
-  name: Word Finder
-  duration: 20
-  scoring: most_matches
-  capabilities:
-    - fastNavigation
-    - speed
-unplayed:
-  name: Unplayed test game
+default: &default
+  "barcode-finder":
+    name: Barcode Finder
+    scoring: most_matches
+    capabilities:
+      - barcode
+      - speed
+  "bluetooth-collector":
+    name: Bluetooth Collector
+    duration: 15
+    scoring: highest_value
+    capabilities:
+      - bluetooth
+      - speed
+  enumerator:
+    name: Enumerator
+    scoring: closest
+  "magnetometer-magnitude":
+    name: Magnetometer FIXME
+    duration: 30
+    scoring: highest_value
+    capabilities:
+      - magnetometer
+  "multiple-choice":
+    name: Multiple Choice
+    duration: 10
+    scoring: most_matches
+  tap:
+    name: Tap
+    duration: 10
+    scoring: highest_value
+    capabilities:
+      - fastNavigation
+  "word-collector":
+    name: Word Collector
+    duration: 20
+    scoring: highest_value
+    capabilities:
+      - fastNavigation
+      - speed
+  "word-finder":
+    name: Word Finder
+    duration: 20
+    scoring: most_matches
+    capabilities:
+      - fastNavigation
+      - speed
+  unplayed:
+    name: Unplayed test game
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
