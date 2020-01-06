@@ -5,7 +5,7 @@ ActiveAdmin.register Incarnation do
 
   form do |f|
     f.semantic_errors
-    f.inputs except: [:capabilities]
+    f.inputs except: [:capabilities, :point]
     f.inputs do
       # Adapted from https://stackoverflow.com/a/27607475/760389
       f.input :capabilities_raw, as: :text
