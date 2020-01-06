@@ -4,7 +4,9 @@ class Scorer
   end
 
   def call
-    highest = @game.participations.max_by{|p| calculate_participation_score(p) }[:score]
+    comparison = scoring == "closest" ? :min_by : :max_by
+
+    highest = @game.participations.send(comparison){|p| calculate_participation_score(p) }[:score]
     @game.participations.select{|p| highest == p[:score] }.each{|p| p.winner = true && p.save }
 
     @game.participations.each(&:finish!)
@@ -20,10 +22,10 @@ class Scorer
   end
 
   protected def calculate_representation_score(representation)
-    if @game.incarnation.concept.scoring == "highest_value"
+    if scoring == "highest_value"
       representation.result && representation.result["value"] ?
         representation.result["value"] : 0
-    elsif @game.incarnation.concept.scoring == "most_matches"
+    elsif scoring == "most_matches"
       goal = @game.incarnation.goal["values"]
       found = representation.result && representation.result["values"] ? representation.result["values"] : []
 
@@ -35,6 +37,10 @@ class Scorer
       end
 
       matches.length
+    elsif scoring == "closest"
+      goal = @game.incarnation.goal["value"]
+      (goal - (representation.result && representation.result["value"] ?
+        representation.result["value"] : 0)).abs
     end
   end
 
@@ -42,5 +48,9 @@ class Scorer
     representing = participation.representations.select(&:representing)
     participation.score =
       representing.inject(0.0) {|sum, r| sum + calculate_representation_score(r) } / representing.length
+  end
+
+  protected def scoring
+    @game.incarnation.concept.scoring
   end
 end

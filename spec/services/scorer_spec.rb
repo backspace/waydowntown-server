@@ -115,6 +115,30 @@ RSpec.describe Scorer do
         end
       end
     end
+
+    context "and the incarnation scores using closest" do
+      let(:incarnation) { Incarnation.create(concept_id: "enumerator", goal: {"value" => 1312 })}
+
+      context "and one team’s member is closest" do
+        before do
+          member1a_representation.update(result: { "value" => 1311 })
+          member2_representation.update(result: { "value" => 1300 })
+          member3_representation.update(result: { "value" => 1401 })
+        end
+
+        it "declares that member’s team the winner" do
+          expect(subject.winners).to contain_exactly( team1 )
+        end
+
+        it "stores the score for each participation" do
+          subject
+
+          expect(team1_participation[:score]).to eq(1)
+          expect(team2_participation[:score]).to eq(12)
+          expect(team3_participation[:score]).to eq(89)
+        end
+      end
+    end
   end
 
   context "when a team has more than one representing member" do
