@@ -1,4 +1,5 @@
 class Incarnation < ApplicationRecord
+  include RatingsValidation
   extend Memoist
 
   belongs_to :location, optional: true

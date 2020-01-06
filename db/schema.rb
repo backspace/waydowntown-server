@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_05_002650) do
+ActiveRecord::Schema.define(version: 2020_01_06_161447) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,8 @@ ActiveRecord::Schema.define(version: 2020_01_05_002650) do
     t.string "capabilities", default: [], array: true
     t.decimal "lat"
     t.decimal "lon"
+    t.integer "awesomeness", default: 0
+    t.integer "risk", default: 0
     t.index ["location_id"], name: "index_incarnations_on_location_id"
   end
 
@@ -66,6 +68,8 @@ ActiveRecord::Schema.define(version: 2020_01_05_002650) do
     t.string "capabilities", default: [], array: true
     t.decimal "lat"
     t.decimal "lon"
+    t.integer "awesomeness", default: 0
+    t.integer "risk", default: 0
     t.index ["parent_id"], name: "index_locations_on_parent_id"
   end
 
@@ -81,8 +85,8 @@ ActiveRecord::Schema.define(version: 2020_01_05_002650) do
     t.string "registration_id"
     t.string "registration_type"
     t.datetime "last_located"
-    t.jsonb "capabilities", default: {}
-    t.jsonb "device", default: {}
+    t.jsonb "capabilities", default: {}, null: false
+    t.jsonb "device", default: {}, null: false
     t.boolean "admin"
     t.string "token"
     t.index ["team_id"], name: "index_members_on_team_id"
